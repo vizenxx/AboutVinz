@@ -64,8 +64,15 @@ export default function MobileLayout({
 
         const onEnd = () => { dragging.current = false; };
 
-        const touchStart = (e) => { e.preventDefault(); onStart(e.touches[0].clientX, e.touches[0].clientY); };
-        const touchMove = (e) => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); };
+        const touchStart = (e) => {
+            onStart(e.touches[0].clientX, e.touches[0].clientY);
+        };
+        const touchMove = (e) => {
+            // CRITICAL FIX: Do not block scrolling unless we are actively dragging the menu
+            if (!dragging.current) return;
+            if (e.cancelable) e.preventDefault();
+            onMove(e.touches[0].clientX, e.touches[0].clientY);
+        };
         const mouseDown = (e) => onStart(e.clientX, e.clientY);
         const mouseMove = (e) => onMove(e.clientX, e.clientY);
 
