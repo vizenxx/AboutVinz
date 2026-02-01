@@ -45,7 +45,7 @@ export default function MobileLayout({
     // FIX: Initialize to TOP RIGHT (y is distance from BOTTOM)
     const [position, setPosition] = useState(() => ({
         x: 20,
-        y: typeof window !== 'undefined' ? window.innerHeight - 100 : 600
+        y: typeof window !== 'undefined' ? window.innerHeight - 160 : 600
     }));
     const isDragging = useRef(false);
     const dragOffset = useRef({ x: 0, y: 0 });
