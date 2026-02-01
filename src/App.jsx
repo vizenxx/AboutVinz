@@ -342,7 +342,7 @@ export default function App() {
         />
       )}
 
-      <div ref={containerRef} className={`relative w-full transition-colors duration-500 ease-in-out font-sans ${theme.text} ${theme.selection} ${isMobile ? 'min-h-[100dvh]' : 'h-[100dvh] overflow-hidden'}`} style={{ backgroundColor: pageBg, '--muted-color': mutedColor }}>
+      <div ref={containerRef} className={`relative w-full transition-colors duration-500 ease-in-out font-sans ${theme.text} ${theme.selection} ${isMobile ? 'fixed inset-0 overflow-hidden' : 'h-[100dvh] overflow-hidden'}`} style={{ backgroundColor: pageBg, '--muted-color': mutedColor }}>
 
         {/* Backgrounds - Mobile: fixed to viewport, Desktop: absolute to container */}
         <div className={`${isMobile ? 'fixed' : 'absolute'} inset-0 z-0 pointer-events-none`}>
