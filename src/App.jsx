@@ -79,7 +79,10 @@ export default function App() {
 
   const randomizeSpots = () => {
     spotsRef.current = [];
-    const spotCount = Math.floor(Math.random() * 5) + 2;
+    // OPTIMIZATION: Reduce spot count for mobile (2-3) vs Desktop (3-7)
+    // 3-7 spots logic: floor(random * 5) + 3
+    // 2-3 spots logic: floor(random * 2) + 2
+    const spotCount = isMobile ? (Math.floor(Math.random() * 2) + 2) : (Math.floor(Math.random() * 5) + 3);
     const maxAttempts = 50;
 
     for (let i = 0; i < spotCount; i++) {
@@ -199,7 +202,15 @@ export default function App() {
     const canvas = spotlightRef.current; if (!canvas) return;
     const ctx = canvas.getContext('2d'); let animationFrameId; let currentColor = { ...targetConfigRef.current };
     let mousePos = { x: -1000, y: -1000 }; let mouseActive = false; let mouseTimer; let time = 0;
-    const resizeCanvas = () => { if (canvas.parentElement) { canvas.width = canvas.parentElement.offsetWidth; canvas.height = canvas.parentElement.offsetHeight; } };
+    const resizeCanvas = () => {
+      if (canvas.parentElement) {
+        // OPTIMIZATION: Cap pixel ratio on mobile to save GPU
+        const dpr = isMobile ? Math.min(window.devicePixelRatio, 1.5) : window.devicePixelRatio;
+        canvas.width = canvas.parentElement.offsetWidth * dpr;
+        canvas.height = canvas.parentElement.offsetHeight * dpr;
+        ctx.scale(dpr, dpr);
+      }
+    };
     window.addEventListener('resize', resizeCanvas); resizeCanvas();
     const handleMouseMove = (e) => { mousePos.x = e.clientX; mousePos.y = e.clientY; mouseActive = true; clearTimeout(mouseTimer); mouseTimer = setTimeout(() => { mouseActive = false; }, 2000); };
     window.addEventListener('mousemove', handleMouseMove);
@@ -228,7 +239,13 @@ export default function App() {
   useEffect(() => {
     const canvas = rippleCanvasRef.current; if (!canvas) return;
     const ctx = canvas.getContext('2d'); let animationFrameId; let lastPos = null; const CLICK_CONFIG = { maxRadius: 500, lifespan: 4000 };
-    const resizeCanvas = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    const resizeCanvas = () => {
+      // OPTIMIZATION: Cap pixel ratio on mobile
+      const dpr = isMobile ? Math.min(window.devicePixelRatio, 1.5) : window.devicePixelRatio;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.scale(dpr, dpr);
+    };
     window.addEventListener('resize', resizeCanvas); setTimeout(resizeCanvas, 50);
     const handleMouseMove = (e) => {
       const x = e.clientX; const y = e.clientY; const now = Date.now();
