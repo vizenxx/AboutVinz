@@ -317,44 +317,45 @@ export default function App() {
         {/* CONTENT */}
         <div className={`relative z-10 ${isMobile ? '' : 'h-full w-full'}`}>
           {/* Mobile Layout */}
-          <MobileLayout
-            activePage={activePage}
-            handlePageChange={handlePageChange}
-            isLightMode={isLightMode}
-            setIsLightMode={setIsLightMode}
-            theme={theme}
-            colorScheme={colorScheme}
-            nameColor={nameColor}
-            roles={roles}
-            currentRoleIndex={currentRoleIndex}
-            isColorPinned={isColorPinned}
-            setIsColorPinned={setIsColorPinned}
-          />
-
-          {/* Desktop Layout */}
-          <DesktopLayout
-            activePage={activePage}
-            handlePageChange={handlePageChange}
-            clickedItem={clickedItem}
-            setClickedItem={setClickedItem}
-            hoveredNav={hoveredNav}
-            setHoveredNav={setHoveredNav}
-            isLightMode={isLightMode}
-            setIsLightMode={setIsLightMode}
-            theme={theme}
-            colorScheme={colorScheme}
-            nameColor={nameColor}
-            roles={roles}
-            currentRoleIndex={currentRoleIndex}
-            isRoleHovered={isRoleHovered}
-            setIsRoleHovered={setIsRoleHovered}
-            bioRef={bioRef}
-            aboutContentRef={aboutContentRef}
-            hoveredEl={hoveredEl}
-            setHoveredEl={setHoveredEl}
-            isColorPinned={isColorPinned}
-            setIsColorPinned={setIsColorPinned}
-          />
+          {isMobile ? (
+            <MobileLayout
+              activePage={activePage}
+              handlePageChange={handlePageChange}
+              isLightMode={isLightMode}
+              setIsLightMode={setIsLightMode}
+              theme={theme}
+              colorScheme={colorScheme}
+              nameColor={nameColor}
+              roles={roles}
+              currentRoleIndex={currentRoleIndex}
+              isColorPinned={isColorPinned}
+              setIsColorPinned={setIsColorPinned}
+            />
+          ) : (
+            <DesktopLayout
+              activePage={activePage}
+              handlePageChange={handlePageChange}
+              clickedItem={clickedItem}
+              setClickedItem={setClickedItem}
+              hoveredNav={hoveredNav}
+              setHoveredNav={setHoveredNav}
+              isLightMode={isLightMode}
+              setIsLightMode={setIsLightMode}
+              theme={theme}
+              colorScheme={colorScheme}
+              nameColor={nameColor}
+              roles={roles}
+              currentRoleIndex={currentRoleIndex}
+              isRoleHovered={isRoleHovered}
+              setIsRoleHovered={setIsRoleHovered}
+              bioRef={bioRef}
+              aboutContentRef={aboutContentRef}
+              hoveredEl={hoveredEl}
+              setHoveredEl={setHoveredEl}
+              isColorPinned={isColorPinned}
+              setIsColorPinned={setIsColorPinned}
+            />
+          )}
         </div>
 
       </div>
