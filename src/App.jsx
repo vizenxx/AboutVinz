@@ -123,7 +123,7 @@ export default function App() {
   useEffect(() => {
     // Wheel event logic for pagination
     const handleWheel = (e) => {
-      if (isTransitioning.current) return;
+      if (isTransitioning.current || isMobile) return;
       if (Math.abs(e.deltaY) < 40) return;
       // Scroll inside specific divs prevention
       if (activePage === 'about' && aboutContentRef.current) {
@@ -145,11 +145,17 @@ export default function App() {
     };
     window.addEventListener('wheel', handleWheel);
     return () => window.removeEventListener('wheel', handleWheel);
-  }, [activePage]);
+  }, [activePage, isMobile]);
 
   // Handle Page Transition (GSAP)
   const handlePageChange = (newPage) => {
     if (newPage === activePage || isTransitioning.current) return;
+    // CRITICAL FIX: Disable GSAP page transitions on Mobile or if refs are missing
+    if (isMobile || !bioRef.current) {
+      setActivePage(newPage);
+      return;
+    }
+
     isTransitioning.current = true;
     const angle = Math.random() * 360; const radian = angle * (Math.PI / 180);
     const distance = 2000; const destX = Math.cos(radian) * distance; const destY = Math.sin(radian) * distance;
@@ -160,22 +166,29 @@ export default function App() {
           trailRipplesRef.current = [];
           clickRipplesRef.current = [];
           // Reset positions hidden
-          gsap.set(bioRef.current, { x: -destX * 0.5, y: -destY * 0.5, opacity: 0, scale: 0.8, filter: 'blur(10px)' });
-          gsap.set(rippleCanvasRef.current, { x: -destX * 0.5, y: -destY * 0.5, opacity: 0, scale: 0.8, filter: 'blur(10px)' });
+          if (bioRef.current) gsap.set(bioRef.current, { x: -destX * 0.5, y: -destY * 0.5, opacity: 0, scale: 0.8, filter: 'blur(10px)' });
+          if (rippleCanvasRef.current) gsap.set(rippleCanvasRef.current, { x: -destX * 0.5, y: -destY * 0.5, opacity: 0, scale: 0.8, filter: 'blur(10px)' });
 
           // Animate in
-          gsap.to(bioRef.current, { x: 0, y: 0, opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.5, ease: 'power4.out' });
-          gsap.to(rippleCanvasRef.current, { x: 0, y: 0, opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.5, ease: 'power4.out' });
-          gsap.to(spotlightRef.current, { x: 0, y: 0, opacity: 1, scale: 1.25, filter: 'blur(100px)', duration: 0.5, ease: 'power4.out', onComplete: () => { isTransitioning.current = false; } });
+          if (bioRef.current) gsap.to(bioRef.current, { x: 0, y: 0, opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.5, ease: 'power4.out' });
+          if (rippleCanvasRef.current) gsap.to(rippleCanvasRef.current, { x: 0, y: 0, opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.5, ease: 'power4.out' });
+          if (spotlightRef.current) gsap.to(spotlightRef.current, { x: 0, y: 0, opacity: 1, scale: 1.25, filter: 'blur(100px)', duration: 0.5, ease: 'power4.out', onComplete: () => { isTransitioning.current = false; } });
         }
       });
       // Animate out
-      tl.to([bioRef.current, rippleCanvasRef.current], { x: destX, opacity: 0, scale: 1.2, filter: 'blur(40px)', duration: 0.3, ease: 'expo.in' });
-      tl.to(bioRef.current, { y: destY, duration: 0.3, ease: 'linear' }, "<");
+      const targetsOut = [bioRef.current, rippleCanvasRef.current].filter(Boolean);
+      if (targetsOut.length > 0) {
+        tl.to(targetsOut, { x: destX, opacity: 0, scale: 1.2, filter: 'blur(40px)', duration: 0.3, ease: 'expo.in' });
+        if (bioRef.current) tl.to(bioRef.current, { y: destY, duration: 0.3, ease: 'linear' }, "<");
+      }
+
       const bgTravelDist = destX * 0.5; const bgTravelDistY = destY * 0.5;
-      tl.to(spotlightRef.current, { x: bgTravelDist, opacity: 0, scale: 1.1, filter: 'blur(80px)', duration: 0.3, ease: 'expo.in' }, "<");
-      tl.to(spotlightRef.current, { y: bgTravelDistY, duration: 0.3, ease: 'linear' }, "<");
-      tl.set(spotlightRef.current, { x: -bgTravelDist, y: -bgTravelDistY, opacity: 0, scale: 1.1, filter: 'blur(40px)' });
+      if (spotlightRef.current) {
+        tl.to(spotlightRef.current, { x: bgTravelDist, opacity: 0, scale: 1.1, filter: 'blur(80px)', duration: 0.3, ease: 'expo.in' }, "<");
+        tl.to(spotlightRef.current, { y: bgTravelDistY, duration: 0.3, ease: 'linear' }, "<");
+        tl.set(spotlightRef.current, { x: -bgTravelDist, y: -bgTravelDistY, opacity: 0, scale: 1.1, filter: 'blur(40px)' });
+      }
+
       clickShockwaveRef.current = 2000;
       spotsRef.current.forEach(spot => { gsap.to(spot, { x: spot.x + -destX * 0.05, y: spot.y + -destY * 0.05, duration: 0.5, ease: 'power2.inOut' }); });
     }, containerRef);
