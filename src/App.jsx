@@ -310,22 +310,27 @@ export default function App() {
     <div className={`w-full min-h-screen flex items-center justify-center overflow-x-hidden`}>
       <div
         ref={containerRef}
-        className={`relative w-full max-w-[100vw] min-h-screen transition-all duration-500 ease-in-out font-sans ${theme.text} ${theme.selection}`}
+        className={`relative w-full max-w-[100vw] transition-all duration-500 ease-in-out font-sans ${theme.text} ${theme.selection} ${isMobile ? 'min-h-screen' : 'h-[100dvh] overflow-hidden'}`}
         style={{ backgroundColor: pageBg, '--muted-color': mutedColor }}
       >
-        {/* === LAYER 1: BACKGROUND (z-0) - Fixed, full viewport === */}
-        <div className="fixed inset-0 z-0 overflow-hidden">
-          <canvas ref={spotlightRef} className="absolute inset-0 transition-opacity duration-1000 scale-125 pointer-events-none" style={{ filter: 'blur(100px)' }} />
-          {/* Background Blur + Noise Texture */}
-          <div className="absolute inset-0 pointer-events-none" style={{ backdropFilter: 'blur(30px) saturate(1.2)', WebkitBackdropFilter: 'blur(30px) saturate(1.2)', backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E")`, mixBlendMode: isLightMode ? 'plus-lighter' : 'overlay', opacity: isLightMode ? 0.6 : 0.4 }} />
+        {/* BACKGROUNDS - Desktop: absolute, Mobile: fixed */}
+        <div className={`${isMobile ? 'fixed' : 'absolute'} inset-0 z-0 overflow-hidden`}>
+          <canvas ref={spotlightRef} className="absolute inset-0 z-0 transition-opacity duration-1000 scale-125 pointer-events-none" style={{ filter: 'blur(100px)' }} />
+          <div className="absolute inset-0 z-1 pointer-events-none" style={{ backdropFilter: 'blur(30px) saturate(1.2)', WebkitBackdropFilter: 'blur(30px) saturate(1.2)', backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E")`, mixBlendMode: isLightMode ? 'plus-lighter' : 'overlay', opacity: isLightMode ? 0.6 : 0.4 }} />
         </div>
 
-        {/* === LAYER 2: GLOBAL NOISE OVERLAY (z-5) - Fixed, full viewport === */}
-        <div className="fixed inset-0 pointer-events-none z-[5] opacity-[0.07] mix-blend-overlay user-select-none"><svg className="w-full h-full"><filter id="globalNoise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" /></filter><rect width="100%" height="100%" filter="url(#globalNoise)" /></svg></div>
+        {/* RIPPLE CANVAS */}
+        <canvas ref={rippleCanvasRef} className="fixed inset-0 pointer-events-none z-20" />
 
-        {/* === LAYER 3: CONTENT (z-10) - Scrollable === */}
-        <div className="relative z-[10]">
-          {/* Mobile Layout + Controls */}
+        {/* CURSOR - Desktop only */}
+        {!isMobile && <div ref={cursorRef} className={`fixed top-0 left-0 w-6 h-6 border ${isLightMode ? 'border-black' : 'border-white'} rounded-full pointer-events-none z-[60] mix-blend-difference -translate-x-1/2 -translate-y-1/2 hidden md:block transition-transform duration-75 ease-out`} />}
+
+        {/* GLOBAL NOISE - z-50 for desktop (on top), z-5 for mobile (behind content) */}
+        <div className={`fixed inset-0 pointer-events-none ${isMobile ? 'z-[5]' : 'z-[50]'} opacity-[0.07] mix-blend-overlay user-select-none`}><svg className="w-full h-full"><filter id="globalNoise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" /></filter><rect width="100%" height="100%" filter="url(#globalNoise)" /></svg></div>
+
+        {/* CONTENT */}
+        <div className={`relative ${isMobile ? 'z-[10]' : 'z-10 h-full'}`}>
+          {/* Mobile Layout */}
           <MobileLayout
             activePage={activePage}
             handlePageChange={handlePageChange}
@@ -365,12 +370,6 @@ export default function App() {
             setIsColorPinned={setIsColorPinned}
           />
         </div>
-
-        {/* === LAYER 4: RIPPLE CANVAS (z-20) - HIDDEN FOR DEBUGGING === */}
-        {/* <canvas ref={rippleCanvasRef} className="fixed inset-0 z-20 pointer-events-none" /> */}
-
-        {/* === LAYER 5: CURSOR (z-60) - Desktop only === */}
-        {!isMobile && <div ref={cursorRef} className={`fixed top-0 left-0 w-6 h-6 border ${isLightMode ? 'border-black' : 'border-white'} rounded-full pointer-events-none z-[60] mix-blend-difference -translate-x-1/2 -translate-y-1/2 hidden md:block transition-transform duration-75 ease-out`} />}
 
       </div>
     </div>
