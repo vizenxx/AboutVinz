@@ -88,8 +88,14 @@ export default function MobileLayout({
 
     return (
         <>
-            {/* SCROLLABLE MASKED CONTENT (Fixed Frame with Inner Scroll) */}
-            <div className="fixed inset-0 z-30 overflow-y-auto overflow-x-hidden" style={{ maskImage: 'linear-gradient(to bottom, transparent 0px, black 160px, black 100%)', WebkitMaskImage: 'linear-gradient(to bottom, transparent 0px, black 160px, black 100%)' }}>
+            {/* NATURAL SCROLL CONTAINER (Reverted for Performance) */}
+            {/* mask-attachment: fixed keeps the mask stationary on screen while content scrolls! */}
+            <div className="relative w-full z-40" style={{
+                maskImage: 'linear-gradient(to bottom, transparent 0px, black 160px, black 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, transparent 0px, black 160px, black 100%)',
+                maskAttachment: 'fixed',
+                WebkitMaskAttachment: 'fixed'
+            }}>
                 <div className="w-full flex flex-col pb-32">
                     {/* HOME */}
                     <section ref={homeRef} className="w-full min-h-[100dvh] flex flex-col justify-end px-6 py-24 relative">
@@ -152,7 +158,7 @@ export default function MobileLayout({
             {/* Top Left: Desktop-style Nav (Sticky) */}
             <div className={`fixed top-6 left-6 z-40 flex flex-col items-start gap-3 ${theme.text} transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>
                 {/* Vinz Tan (About) - Active only on About */}
-                {/* Vinz Tan (About) - Always color */}
+                {/* Vinz Tan (About) - Primary unless Projects active */}
                 <button onClick={() => handlePageChange('about')} className="flex items-center group h-5">
                     <span className="transition-all duration-300 mr-3" style={{
                         width: activePage === 'about' ? '4px' : '0px',
@@ -160,7 +166,10 @@ export default function MobileLayout({
                         backgroundColor: colorScheme.compString,
                         opacity: activePage === 'about' ? 1 : 0
                     }} />
-                    <span className={`text-lg font-black tracking-[0.2em] uppercase transition-opacity duration-300 ${activePage === 'about' ? 'opacity-100' : 'opacity-80'}`} style={{ color: nameColor }}>Vinz Tan</span>
+                    <span className={`text-lg font-black tracking-[0.2em] uppercase transition-opacity duration-300 ${activePage === 'about' ? 'opacity-100' : 'opacity-80'}`}
+                        style={{ color: activePage === 'work' ? 'inherit' : nameColor }}>
+                        Vinz Tan
+                    </span>
                 </button>
 
                 {/* Projects (Work) - Active only on Work */}
@@ -207,23 +216,25 @@ export default function MobileLayout({
             </div>
 
             {/* Menu Overlay */}
-            {isMenuOpen && (
-                <div className={`fixed inset-0 z-[45] ${overlayBg} backdrop-blur-xl transition-all duration-500 flex flex-col items-center justify-center gap-8`}>
-                    {[
-                        { name: 'Home', ref: homeRef },
-                        { name: 'Vinz Tan', ref: aboutRef },
-                        { name: 'Projects', ref: workRef }
-                    ].map((item) => (
-                        <button key={item.name} onClick={() => scrollTo(item.ref)} className={`text-4xl font-bold uppercase tracking-widest ${overlayText} hover:opacity-70`} style={item.name === 'Vinz Tan' ? { color: nameColor } : {}}>
-                            {item.name}
-                        </button>
-                    ))}
-                    <div className={`mt-8 flex gap-8 text-sm ${isLightMode ? 'text-black/60' : 'text-white/60'}`}>
-                        <a href="#">LinkedIn</a>
-                        <a href="mailto:hello@vinztan.com">Email</a>
+            {
+                isMenuOpen && (
+                    <div className={`fixed inset-0 z-[45] ${overlayBg} backdrop-blur-xl transition-all duration-500 flex flex-col items-center justify-center gap-8`}>
+                        {[
+                            { name: 'Home', ref: homeRef },
+                            { name: 'Vinz Tan', ref: aboutRef },
+                            { name: 'Projects', ref: workRef }
+                        ].map((item) => (
+                            <button key={item.name} onClick={() => scrollTo(item.ref)} className={`text-4xl font-bold uppercase tracking-widest ${overlayText} hover:opacity-70`} style={item.name === 'Vinz Tan' ? { color: nameColor } : {}}>
+                                {item.name}
+                            </button>
+                        ))}
+                        <div className={`mt-8 flex gap-8 text-sm ${isLightMode ? 'text-black/60' : 'text-white/60'}`}>
+                            <a href="#">LinkedIn</a>
+                            <a href="mailto:hello@vinztan.com">Email</a>
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
         </>
     );
 }
