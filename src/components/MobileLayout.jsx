@@ -35,22 +35,22 @@ export default function MobileLayout({
         return () => clearInterval(interval);
     }, []);
 
-    // Scroll Spy DISABLED FOR PERFORMANCE
-    // useEffect(() => {
-    //     const observer = new IntersectionObserver((entries) => {
-    //         entries.forEach(entry => {
-    //             if (entry.isIntersecting) {
-    //                 if (entry.target === homeRef.current) handlePageChange('home');
-    //                 if (entry.target === aboutRef.current) handlePageChange('about');
-    //                 if (entry.target === workRef.current) handlePageChange('work');
-    //             }
-    //         });
-    //     }, { threshold: 0.3 });
-    //     if (homeRef.current) observer.observe(homeRef.current);
-    //     if (aboutRef.current) observer.observe(aboutRef.current);
-    //     if (workRef.current) observer.observe(workRef.current);
-    //     return () => observer.disconnect();
-    // }, [handlePageChange]);
+    // Scroll Spy (Trigger active state on scroll)
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target === homeRef.current) handlePageChange('home');
+                    if (entry.target === aboutRef.current) handlePageChange('about');
+                    if (entry.target === workRef.current) handlePageChange('work');
+                }
+            });
+        }, { threshold: 0.3 });
+        if (homeRef.current) observer.observe(homeRef.current);
+        if (aboutRef.current) observer.observe(aboutRef.current);
+        if (workRef.current) observer.observe(workRef.current);
+        return () => observer.disconnect();
+    }, [handlePageChange]);
 
     const scrollTo = (ref) => {
         if (ref.current) {
@@ -208,7 +208,7 @@ export default function MobileLayout({
             {/* Bottom Left: Location/Version (Restored Fixed) */}
             <div className={`fixed bottom-6 left-6 z-40 flex flex-col gap-1 text-[10px] uppercase tracking-widest ${theme.text} transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>
                 <div className="opacity-50">Based in Malaysia</div>
-                <div className="opacity-50">© 2026 (v12.35)</div>
+                <div className="opacity-50">© 2026 (v12.36)</div>
             </div>
 
             {/* Bottom Right: Scroll Indicator */}
