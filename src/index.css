@@ -10,8 +10,9 @@
     font-family: 'Inter', sans-serif;
     width: 100%;
     height: 100%;
-    overflow: hidden;
-    /* CRITICAL: Prevent body scroll, let React components handle it */
+    /* Allow natural scroll, but keep x-axis locked */
+    overflow-x: hidden;
+    overflow-y: auto;
     overscroll-behavior: none;
     /* Kill rubber-band effect */
     /* Background color is set dynamically by App.jsx */
