@@ -209,25 +209,27 @@ export default function MobileLayout({
             {/* Footer */}
             <div className={`fixed bottom-6 right-6 z-40 text-[10px] uppercase tracking-widest opacity-50 text-right ${theme.text} pointer-events-none`}>
                 <div>Based in Malaysia</div>
-                <div>© 2026 (v12.5)</div>
+                <div>© 2026 (v12.6)</div>
             </div>
 
             {/* Menu Overlay */}
-            <div className={`fixed inset-0 z-[45] ${overlayBg} backdrop-blur-xl transition-all duration-500 flex flex-col items-center justify-center gap-8 ${isMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                {[
-                    { name: 'Home', ref: homeRef },
-                    { name: 'Vinz Tan', ref: aboutRef },
-                    { name: 'Projects', ref: workRef }
-                ].map((item) => (
-                    <button key={item.name} onClick={() => scrollTo(item.ref)} className={`text-4xl font-bold uppercase tracking-widest ${overlayText} hover:opacity-70`} style={item.name === 'Vinz Tan' ? { color: nameColor } : {}}>
-                        {item.name}
-                    </button>
-                ))}
-                <div className={`mt-8 flex gap-8 text-sm ${isLightMode ? 'text-black/60' : 'text-white/60'}`}>
-                    <a href="#">LinkedIn</a>
-                    <a href="mailto:hello@vinztan.com">Email</a>
+            {isMenuOpen && (
+                <div className={`fixed inset-0 z-[45] ${overlayBg} backdrop-blur-xl transition-all duration-500 flex flex-col items-center justify-center gap-8`}>
+                    {[
+                        { name: 'Home', ref: homeRef },
+                        { name: 'Vinz Tan', ref: aboutRef },
+                        { name: 'Projects', ref: workRef }
+                    ].map((item) => (
+                        <button key={item.name} onClick={() => scrollTo(item.ref)} className={`text-4xl font-bold uppercase tracking-widest ${overlayText} hover:opacity-70`} style={item.name === 'Vinz Tan' ? { color: nameColor } : {}}>
+                            {item.name}
+                        </button>
+                    ))}
+                    <div className={`mt-8 flex gap-8 text-sm ${isLightMode ? 'text-black/60' : 'text-white/60'}`}>
+                        <a href="#">LinkedIn</a>
+                        <a href="mailto:hello@vinztan.com">Email</a>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

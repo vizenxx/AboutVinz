@@ -10,7 +10,7 @@
     font-family: 'Inter', sans-serif;
     width: 100%;
     /* height: 100%; <- REMOVED to allow natural scroll */
-    /* min-height: 100%; <- REMOVED */
+    min-height: 100%;
     /* Allow natural scroll, but keep x-axis locked */
     overflow-x: hidden;
     /* overflow-y: auto; <- Let browser handle it naturally */
