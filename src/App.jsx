@@ -344,6 +344,7 @@ export default function App() {
 
           {/* UNIFIED BACKGROUNDS (Spotlight + Noise + Ripple) with Top/Bottom Edge Fade */}
           <div className="fixed inset-0 z-0 pointer-events-none" style={{
+            display: 'none',
             maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)'
           }}>
