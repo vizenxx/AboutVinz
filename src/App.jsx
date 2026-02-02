@@ -202,22 +202,24 @@ export default function App() {
 
   useEffect(() => { if (!isColorPinned) setNameColor(getContrastSafeColor(isLightMode)); }, [isLightMode, isColorPinned]);
 
-  const { pageBg, mutedColor } = useMemo(() => {
-    let { h } = colorScheme.compHSL;
-    const { l } = colorScheme.compHSL;
+  // ========== GLOBAL BACKGROUND COLORS ==========
+  const BG_DARK = '#1a231d';    // Grey-green (dark mode)
+  const BG_LIGHT = '#e8d4f0';   // Light purple (light mode)
+  // ================================================
 
-    // CUSTOM: Mobile Background - Grey Green (Re-applied)
-    let sBg = 5;
-    if (isMobile) {
-      h = 140; // Green Hue
-      sBg = 15; // Slightly more saturated
-    }
+  const pageBg = isLightMode ? BG_LIGHT : BG_DARK;
 
-    const lBg = isLightMode ? 88 : 12;
+  const mutedColor = useMemo(() => {
+    const { h, l } = colorScheme.compHSL;
     const sMuted = 10;
     let lMuted = isLightMode ? (l - 5) : (l + 5); lMuted = Math.max(0, Math.min(100, lMuted));
-    return { pageBg: HSLToRGBString(h, sBg, lBg), mutedColor: HSLToRGBString(h, sMuted, lMuted) };
-  }, [colorScheme, isLightMode, isMobile]);
+    return HSLToRGBString(h, sMuted, lMuted);
+  }, [colorScheme, isLightMode]);
+
+  // Apply background color to document root (global)
+  useEffect(() => {
+    document.documentElement.style.setProperty('--page-bg', pageBg);
+  }, [pageBg]);
 
   const cursorRef = useRef(null); const spotlightRef = useRef(null); const rippleCanvasRef = useRef(null);
 
@@ -338,12 +340,12 @@ export default function App() {
     <ReactLenis root>
       <div className={`w-full ${isMobile ? '' : 'flex items-center justify-center'}`}>
 
-        <div ref={containerRef} className={`relative w-full transition-colors duration-500 ease-in-out font-sans ${theme.text} ${theme.selection} ${isMobile ? '' : 'overflow-hidden'}`} style={{ backgroundColor: pageBg, '--muted-color': mutedColor }}>
+        <div ref={containerRef} className={`relative w-full transition-colors duration-500 ease-in-out font-sans ${theme.text} ${theme.selection} ${isMobile ? '' : 'overflow-hidden'}`} style={{ '--muted-color': mutedColor }}>
 
           {/* Backgrounds - Mobile: fixed to viewport, Desktop: absolute to container */}
           <div className={`${isMobile ? 'fixed' : 'absolute'} inset-0 z-0 pointer-events-none`}>
-            <canvas ref={spotlightRef} className="absolute inset-0 z-0 transition-opacity duration-1000 scale-125 pointer-events-none" style={{ filter: isMobile ? 'blur(40px)' : 'blur(100px)' }} />
-            <div className="absolute inset-0 z-1 pointer-events-none" style={{ backdropFilter: isMobile ? 'none' : 'blur(30px) saturate(1.2)', WebkitBackdropFilter: isMobile ? 'none' : 'blur(30px) saturate(1.2)', backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E")`, mixBlendMode: isLightMode ? 'plus-lighter' : 'overlay', opacity: isLightMode ? 0.6 : 0.4 }} />
+            <canvas ref={spotlightRef} className="absolute inset-0 z-0 transition-opacity duration-1000 scale-125 pointer-events-none" style={{ filter: isMobile ? 'blur(40px)' : 'blur(100px)', opacity: isMobile ? 0 : 1 }} />
+            <div className="absolute inset-0 z-1 pointer-events-none" style={{ backdropFilter: isMobile ? 'none' : 'blur(30px) saturate(1.2)', WebkitBackdropFilter: isMobile ? 'none' : 'blur(30px) saturate(1.2)', backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E")`, mixBlendMode: isLightMode ? 'plus-lighter' : 'overlay', opacity: isMobile ? 0 : (isLightMode ? 0.6 : 0.4) }} />
           </div>
           <canvas ref={rippleCanvasRef} className="fixed inset-0 pointer-events-none z-20" />
           {!isMobile && <div ref={cursorRef} className={`fixed top-0 left-0 w-6 h-6 border ${isLightMode ? 'border-black' : 'border-white'} rounded-full pointer-events-none z-[60] mix-blend-difference -translate-x-1/2 -translate-y-1/2 hidden md:block transition-transform duration-75 ease-out`} />}
