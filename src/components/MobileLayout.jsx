@@ -35,6 +35,27 @@ export default function MobileLayout({
         return () => clearInterval(interval);
     }, []);
 
+    // Scroll Spy (Trigger active state on scroll)
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // console.log("Visible:", entry.target);
+                    // Update active page based on visible section
+                    if (entry.target === homeRef.current) handlePageChange('home');
+                    if (entry.target === aboutRef.current) handlePageChange('about');
+                    if (entry.target === workRef.current) handlePageChange('work');
+                }
+            });
+        }, { threshold: 0.3 }); // Lower threshold for better mobile detection
+
+        if (homeRef.current) observer.observe(homeRef.current);
+        if (aboutRef.current) observer.observe(aboutRef.current);
+        if (workRef.current) observer.observe(workRef.current);
+
+        return () => observer.disconnect();
+    }, [handlePageChange]);
+
     const scrollTo = (ref) => {
         if (ref.current) {
             ref.current.scrollIntoView({ behavior: 'smooth' });
@@ -121,38 +142,49 @@ export default function MobileLayout({
 
             {/* --- FIXED UI OVERLAYS --- */}
 
-            {/* Top Left: Name & Active Page Indicator (Sticky) */}
+            {/* Top Left: Desktop-style Nav (Sticky) */}
             <div className={`fixed top-6 left-6 z-40 flex flex-col items-start gap-1 ${theme.text} transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>
-                {/* Name (Click to About) */}
-                <button onClick={() => activePage !== 'about' && handlePageChange('about')} className="flex items-center group mb-1">
+                {/* Vinz Tan (Home/About) */}
+                <button onClick={() => handlePageChange('about')} className="flex items-center group h-6">
                     <span className="transition-all duration-300 mr-2" style={{
-                        width: activePage === 'about' ? '4px' : '0px',
+                        width: (activePage === 'about' || activePage === 'home') ? '4px' : '0px',
                         height: '1.2em',
                         backgroundColor: colorScheme.compString,
-                        opacity: activePage === 'about' ? 1 : 0
+                        opacity: (activePage === 'about' || activePage === 'home') ? 1 : 0
                     }} />
-                    <span className={`text-xl font-black tracking-[0.2em] uppercase transition-opacity duration-300 ${activePage === 'about' ? 'opacity-100' : 'opacity-70'}`} style={{ color: activePage === 'about' ? nameColor : 'inherit' }}>Vinz Tan</span>
+                    <span className={`text-xl font-black tracking-[0.2em] uppercase transition-opacity duration-300 ${(activePage === 'about' || activePage === 'home') ? 'opacity-100' : 'opacity-60'}`} style={{ color: (activePage === 'about' || activePage === 'home') ? nameColor : 'inherit' }}>Vinz Tan</span>
                 </button>
 
-                {/* Current Page Title (Dynamic) */}
-                <div className="flex items-center h-4">
+                {/* Projects (Work) */}
+                <button onClick={() => handlePageChange('work')} className="flex items-center group h-6">
                     <span className="transition-all duration-300 mr-2" style={{
-                        width: activePage !== 'about' ? '4px' : '0px',
-                        height: '1em',
+                        width: activePage === 'work' ? '4px' : '0px',
+                        height: '1.2em', // Matching height
                         backgroundColor: colorScheme.compString,
-                        opacity: activePage !== 'about' ? 1 : 0
+                        opacity: activePage === 'work' ? 1 : 0
                     }} />
-                    <span className="text-xs font-bold tracking-[0.2em] uppercase opacity-90">
-                        {activePage === 'about' ? 'ABOUT' : activePage === 'work' ? 'PROJECTS' : 'HOME'}
+                    <span className={`text-xl font-medium tracking-[0.2em] uppercase transition-opacity duration-300 ${activePage === 'work' ? 'opacity-100 font-bold' : 'opacity-60'}`} style={{ color: activePage === 'work' ? colorScheme.base : 'inherit' }}>
+                        Projects
                     </span>
-                </div>
+                </button>
             </div>
 
-            {/* Top Right: Menu Trigger */}
+            {/* Top Right: Floating Pill Menu (Restored) */}
             <div className={`fixed top-6 right-6 z-50`}>
-                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`flex items-center justify-center p-3 rounded-full backdrop-blur-md border shadow-lg transition-transform active:scale-90 ${theme.border} ${isLightMode ? 'bg-white/80 text-black' : 'bg-black/50 text-white'}`}>
-                    {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                </button>
+                <div className={`flex items-center gap-1 p-1.5 rounded-full border shadow-lg backdrop-blur-md transition-colors duration-300 ${theme.border} ${isLightMode ? 'bg-white/90' : 'bg-black/60'}`}>
+                    {/* Menu Toggle */}
+                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-2 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
+                        {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+                    </button>
+                    {/* Pin Color */}
+                    <button onClick={() => setIsColorPinned(!isColorPinned)} className={`p-2 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
+                        <PinIcon size={16} className={isColorPinned ? 'fill-current' : ''} />
+                    </button>
+                    {/* Theme Toggle */}
+                    <button onClick={() => setIsLightMode(!isLightMode)} className={`p-2 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
+                        {isLightMode ? <Moon size={16} /> : <Sun size={16} />}
+                    </button>
+                </div>
             </div>
 
             {/* Bottom Left: Role & Info */}
@@ -163,7 +195,7 @@ export default function MobileLayout({
                     ))}
                 </div>
                 <div className="opacity-50">Based in Malaysia</div>
-                <div className="opacity-50">© 2026 (v12.24)</div>
+                <div className="opacity-50">© 2026 (v12.25)</div>
             </div>
 
             {/* Bottom Right: Scroll Indicator */}
