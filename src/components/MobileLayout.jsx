@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sun, Moon, Pin as PinIcon, Menu, X } from 'lucide-react';
+import { Sun, Moon, Pin as PinIcon, Menu, X, GripVertical } from 'lucide-react';
 import { HackerText } from './TextEffects';
 
 export default function MobileLayout({
@@ -17,6 +17,11 @@ export default function MobileLayout({
 }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [bioIndex, setBioIndex] = useState(0);
+
+    // Draggable Menu State
+    const [menuPos, setMenuPos] = useState({ x: 0, y: 0 });
+    const [isDragging, setIsDragging] = useState(false);
+    const dragStartRef = useRef({ x: 0, y: 0, posX: 0, posY: 0 });
 
     // Refs for scrolling
     const scrollRef = useRef(null);
@@ -99,9 +104,11 @@ export default function MobileLayout({
 
                     {/* Role (Scrollable within Home) */}
                     <div className={`flex flex-col gap-2 z-10 mt-12 mb-6 ${theme.text}`}>
-                        <div className="w-[180px] flex flex-col justify-end">
-                            <h2 className="text-lg font-bold uppercase tracking-wide leading-tight break-words">
-                                {roles[currentRoleIndex]}
+                        <div className="w-[130px] flex flex-col justify-end">
+                            <h2 className="text-sm uppercase tracking-wide leading-tight break-words">
+                                {roles[currentRoleIndex].split(' ').map((word, i) => (
+                                    <span key={i} className={i === 0 ? 'font-bold block' : 'font-light block'}>{word}</span>
+                                ))}
                             </h2>
                         </div>
                     </div>
@@ -213,13 +220,35 @@ export default function MobileLayout({
                 </button>
             </div>
 
-            {/* Top Right: Floating Pill Menu (Restored) */}
-            <div className={`fixed top-6 right-6 z-50`}>
-                <div className={`flex items-center gap-1 p-1.5 rounded-full border shadow-lg transition-colors duration-300 ${theme.border} ${isLightMode ? 'bg-white/95' : 'bg-black/80'}`}>
-                    {/* Menu Toggle */}
-                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-2 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
-                        {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
-                    </button>
+            {/* Top Right: Floating Pill Menu (Draggable + Glass) */}
+            <div
+                className={`fixed z-50 touch-none`}
+                style={{
+                    top: `calc(1.5rem + ${menuPos.y}px)`,
+                    right: `calc(1.5rem - ${menuPos.x}px)`,
+                    cursor: isDragging ? 'grabbing' : 'grab'
+                }}
+            >
+                <div className={`flex items-center gap-1 p-1.5 rounded-full border shadow-lg backdrop-blur-md transition-colors duration-300 ${theme.border} ${isLightMode ? 'bg-white/70' : 'bg-black/50'}`}>
+                    {/* Drag Handle */}
+                    <div
+                        className={`p-2 rounded-full ${isLightMode ? 'text-black/40' : 'text-white/40'}`}
+                        onTouchStart={(e) => {
+                            setIsDragging(true);
+                            const touch = e.touches[0];
+                            dragStartRef.current = { x: touch.clientX, y: touch.clientY, posX: menuPos.x, posY: menuPos.y };
+                        }}
+                        onTouchMove={(e) => {
+                            if (!isDragging) return;
+                            const touch = e.touches[0];
+                            const dx = touch.clientX - dragStartRef.current.x;
+                            const dy = touch.clientY - dragStartRef.current.y;
+                            setMenuPos({ x: dragStartRef.current.posX + dx, y: dragStartRef.current.posY + dy });
+                        }}
+                        onTouchEnd={() => setIsDragging(false)}
+                    >
+                        <GripVertical size={14} />
+                    </div>
                     {/* Pin Color */}
                     <button onClick={() => setIsColorPinned(!isColorPinned)} className={`p-2 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
                         <PinIcon size={16} className={isColorPinned ? 'fill-current' : ''} />
@@ -228,13 +257,17 @@ export default function MobileLayout({
                     <button onClick={() => setIsLightMode(!isLightMode)} className={`p-2 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
                         {isLightMode ? <Moon size={16} /> : <Sun size={16} />}
                     </button>
+                    {/* Menu Toggle (Right) */}
+                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-2 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
+                        {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+                    </button>
                 </div>
             </div>
 
             {/* Bottom Left: Location/Version (Restored Fixed) */}
             <div className={`fixed bottom-6 left-6 z-40 flex flex-col gap-1 text-[10px] uppercase tracking-widest ${theme.text} transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>
                 <div className="opacity-50">Based in Malaysia</div>
-                <div className="opacity-50">© 2026 (v12.37)</div>
+                <div className="opacity-50">© 2026 (v12.38)</div>
             </div>
 
             {/* Bottom Right: Scroll Indicator */}
