@@ -124,15 +124,11 @@ export default function MobileLayout({
     const overlayText = isLightMode ? 'text-black' : 'text-white';
 
     return (
-        // FIXED CONTAINER - Takes full viewport, contains scroll area
-        <div className="fixed inset-0 z-40" style={{ touchAction: 'pan-y' }}>
+        // NATURAL SCROLL CONTAINER
+        <div className="relative w-full min-h-screen z-40">
 
-            {/* SCROLL CONTAINER - This is what scrolls */}
-            <div
-                ref={scrollRef}
-                className="absolute inset-0 overflow-y-auto overflow-x-hidden"
-                style={{ WebkitOverflowScrolling: 'touch' }}
-            >
+            {/* CONTENT WRAPPER */}
+            <div className="w-full flex flex-col">
                 {/* HOME */}
                 <section ref={homeRef} className="min-h-screen w-full flex flex-col justify-between px-6 py-16">
                     <div className="flex flex-col gap-2">
