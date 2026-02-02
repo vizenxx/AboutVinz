@@ -103,9 +103,9 @@ export default function MobileLayout({
                     </div>
 
                     {/* Role (Scrollable within Home) */}
-                    <div className={`flex flex-col gap-2 z-10 mt-12 mb-6 ${theme.text}`}>
-                        <div className="w-[130px] flex flex-col justify-end">
-                            <h2 className="text-sm uppercase tracking-wide leading-tight break-words">
+                    <div className={`flex flex-col gap-2 z-10 mt-12 mb-6`}>
+                        <div className="w-[30%] min-w-[100px] flex flex-col justify-end">
+                            <h2 className={`text-xs uppercase tracking-widest leading-tight ${theme.text}`}>
                                 {roles[currentRoleIndex].split(' ').map((word, i) => (
                                     <span key={i} className={i === 0 ? 'font-bold block' : 'font-light block'}>{word}</span>
                                 ))}
@@ -166,25 +166,24 @@ export default function MobileLayout({
             </div>
 
             {/* TOP BLUR LAYER (Between Content and Header) */}
-            {/* Uses backdrop-filter with a gradient mask on ITSELF to fade the blur effect */}
             <div
-                className="fixed top-0 left-0 right-0 h-28 z-[35] pointer-events-none"
+                className="fixed top-0 left-0 right-0 h-32 z-[35] pointer-events-none"
                 style={{
-                    backdropFilter: 'blur(10px)',
-                    WebkitBackdropFilter: 'blur(10px)',
-                    maskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 100%)',
-                    WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 100%)'
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    maskImage: 'linear-gradient(to bottom, black 0%, black 20%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 20%, transparent 100%)'
                 }}
             />
 
             {/* BOTTOM BLUR LAYER (Between Content and Footer) */}
             <div
-                className="fixed bottom-0 left-0 right-0 h-28 z-[35] pointer-events-none"
+                className="fixed bottom-0 left-0 right-0 h-32 z-[35] pointer-events-none"
                 style={{
-                    backdropFilter: 'blur(10px)',
-                    WebkitBackdropFilter: 'blur(10px)',
-                    maskImage: 'linear-gradient(to top, black 0%, black 40%, transparent 100%)',
-                    WebkitMaskImage: 'linear-gradient(to top, black 0%, black 40%, transparent 100%)'
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    maskImage: 'linear-gradient(to top, black 0%, black 20%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to top, black 0%, black 20%, transparent 100%)'
                 }}
             />
 
@@ -229,7 +228,14 @@ export default function MobileLayout({
                     cursor: isDragging ? 'grabbing' : 'grab'
                 }}
             >
-                <div className={`flex items-center gap-1 p-1.5 rounded-full border shadow-lg backdrop-blur-md transition-colors duration-300 ${theme.border} ${isLightMode ? 'bg-white/70' : 'bg-black/50'}`}>
+                <div
+                    className={`flex items-center gap-1 p-1.5 rounded-full border shadow-lg transition-colors duration-300 ${theme.border}`}
+                    style={{
+                        backdropFilter: 'blur(16px) saturate(1.2)',
+                        WebkitBackdropFilter: 'blur(16px) saturate(1.2)',
+                        backgroundColor: isLightMode ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.4)'
+                    }}
+                >
                     {/* Drag Handle */}
                     <div
                         className={`p-2 rounded-full ${isLightMode ? 'text-black/40' : 'text-white/40'}`}
@@ -267,7 +273,7 @@ export default function MobileLayout({
             {/* Bottom Left: Location/Version (Restored Fixed) */}
             <div className={`fixed bottom-6 left-6 z-40 flex flex-col gap-1 text-[10px] uppercase tracking-widest ${theme.text} transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>
                 <div className="opacity-50">Based in Malaysia</div>
-                <div className="opacity-50">© 2026 (v12.38)</div>
+                <div className="opacity-50">© 2026 (v12.39)</div>
             </div>
 
             {/* Bottom Right: Scroll Indicator */}

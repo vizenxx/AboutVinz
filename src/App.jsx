@@ -203,8 +203,8 @@ export default function App() {
   useEffect(() => { if (!isColorPinned) setNameColor(getContrastSafeColor(isLightMode)); }, [isLightMode, isColorPinned]);
 
   // ========== GLOBAL BACKGROUND COLORS ==========
-  const BG_DARK = '#1a231d';    // Grey-green (dark mode)
-  const BG_LIGHT = '#e8d4f0';   // Light purple (light mode)
+  const BG_DARK = '#000000';    // Black (dark mode)
+  const BG_LIGHT = '#ffffff';   // White (light mode)
   // ================================================
 
   const pageBg = isLightMode ? BG_LIGHT : BG_DARK;
