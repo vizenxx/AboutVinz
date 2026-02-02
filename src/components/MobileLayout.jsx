@@ -29,6 +29,7 @@ export default function MobileLayout({
     const [menuPos, setMenuPos] = useState({ x: 16, y: 64 });
     const dragging = useRef(false);
     const dragStart = useRef({ x: 0, y: 0 });
+    const dragStartRaw = useRef({ x: 0, y: 0 });
     const moved = useRef(false);
 
     // Bio rotation
@@ -47,18 +48,25 @@ export default function MobileLayout({
         const onStart = (x, y) => {
             dragging.current = true;
             moved.current = false;
+            dragStartRaw.current = { x, y };
             const rect = el.getBoundingClientRect();
             dragStart.current = { x: x - rect.left, y: y - rect.top };
         };
 
         const onMove = (x, y) => {
             if (!dragging.current) return;
+
+            // Threshold check for click vs drag
+            const dx = Math.abs(x - dragStartRaw.current.x);
+            const dy = Math.abs(y - dragStartRaw.current.y);
+            if (dx < 5 && dy < 5) return;
+
             moved.current = true;
             const newX = window.innerWidth - x - (el.offsetWidth - dragStart.current.x);
             const newY = y - dragStart.current.y;
             setMenuPos({
                 x: Math.max(8, Math.min(newX, window.innerWidth - el.offsetWidth - 8)),
-                y: Math.max(8, Math.min(newY, window.innerHeight - el.offsetHeight - 8))
+                y: Math.max(64, Math.min(newY, window.innerHeight - el.offsetHeight - 8))
             });
         };
 
@@ -103,7 +111,7 @@ export default function MobileLayout({
     const bios = [
         <div className="flex flex-col gap-2 w-full">
             <div className="flex flex-wrap justify-end gap-2"><span className={theme.highlight}><HackerText text="EMPOWERING" /></span></div>
-            <div className="flex flex-wrap justify-end gap-2"><span className={theme.highlight}><HackerText text="Creative" /></span><span className={theme.highlight}><HackerText text="TEAMS" /></span><span className={theme.muted}><HackerText text="to" /></span></div>
+            <div className="flex flex-wrap justify-end gap-2"><span className={theme.muted}><HackerText text="Creative" /></span><span className={theme.highlight}><HackerText text="TEAMS" /></span><span className={theme.muted}><HackerText text="to" /></span></div>
             <div className="flex flex-wrap justify-end gap-2"><span className={theme.highlight}><HackerText text="SCALE" /></span><span className={theme.highlight}><HackerText text="PRODUCTION" /></span></div>
             <div className="flex flex-wrap justify-end gap-2"><span className={theme.muted}><HackerText text="without" /></span><span className={theme.muted}><HackerText text="compromising" /></span></div>
             <div className="flex flex-wrap justify-end gap-2"><span className={theme.highlight}><HackerText text="INTEGRITY" /></span></div>
@@ -134,7 +142,7 @@ export default function MobileLayout({
                 style={{ WebkitOverflowScrolling: 'touch' }}
             >
                 {/* HOME */}
-                <section ref={homeRef} className="min-h-screen w-full flex flex-col justify-between px-6 py-16">
+                <section ref={homeRef} className="min-h-[100dvh] w-full flex flex-col justify-between px-6 py-16">
                     <div className="flex flex-col gap-2">
                         <h1 className="text-xl font-bold tracking-[0.2em] uppercase" style={{ color: nameColor }}>Vinz Tan</h1>
                         <div className="flex flex-col text-xs font-light tracking-widest opacity-80">
@@ -152,7 +160,7 @@ export default function MobileLayout({
                 </section>
 
                 {/* ABOUT */}
-                <section ref={aboutRef} className="min-h-screen w-full flex flex-col justify-center px-6 py-20 gap-8 relative overflow-hidden">
+                <section ref={aboutRef} className="min-h-[100dvh] w-full flex flex-col justify-center px-6 py-20 gap-8 relative overflow-hidden">
                     <h2 className="text-[15vw] font-bold uppercase tracking-tighter opacity-10 absolute top-10 right-0 pointer-events-none select-none">About</h2>
                     <div className={`w-full aspect-square max-w-sm mx-auto rounded-2xl border ${theme.border} bg-white/5 backdrop-blur-sm flex items-center justify-center`}>
                         <span className={`text-sm uppercase tracking-widest ${theme.subText}`}>Picture</span>
@@ -169,7 +177,7 @@ export default function MobileLayout({
                 </section>
 
                 {/* WORK */}
-                <section ref={workRef} className="min-h-screen w-full flex flex-col justify-center px-6 py-20 gap-8 relative overflow-hidden">
+                <section ref={workRef} className="min-h-[100dvh] w-full flex flex-col justify-center px-6 py-20 gap-8 relative overflow-hidden">
                     <h2 className="text-[15vw] font-bold uppercase tracking-tighter opacity-10 absolute top-10 left-0 pointer-events-none select-none">Work</h2>
                     <div className="flex flex-col items-end text-right space-y-6">
                         <h3 className="text-4xl font-bold uppercase tracking-wide" style={{ color: colorScheme.base }}>Featured Projects</h3>
