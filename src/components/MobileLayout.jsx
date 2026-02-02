@@ -90,18 +90,17 @@ export default function MobileLayout({
             <div className="w-full flex flex-col">
                 {/* HOME */}
                 <section ref={homeRef} className="w-full min-h-[100dvh] flex flex-col justify-end px-6 py-24 relative">
-                    {/* Hero Text */}
+                    {/* Hero Text (Bio) */}
                     <div className="flex-1 flex flex-col justify-center items-end text-right py-8 z-10">
-                        <div className="text-[9vw] font-bold leading-none tracking-tighter mix-blend-difference">
+                        <div className="text-[7vw] font-bold leading-none tracking-tighter mix-blend-difference">
                             {bios[bioIndex]}
                         </div>
                     </div>
 
                     {/* Role (Scrollable within Home) */}
                     <div className={`flex flex-col gap-2 z-10 mt-12 mb-6 ${theme.text}`}>
-                        {/* Constrained container matching "Based in Malaysia" width approx */}
                         <div className="w-[180px] flex flex-col justify-end">
-                            <h2 className="text-2xl font-bold uppercase tracking-wide leading-tight break-words">
+                            <h2 className="text-lg font-bold uppercase tracking-wide leading-tight break-words">
                                 {roles[currentRoleIndex]}
                             </h2>
                         </div>
@@ -110,7 +109,6 @@ export default function MobileLayout({
 
                 {/* ABOUT */}
                 <section ref={aboutRef} className="w-full flex flex-col justify-center px-6 py-20 gap-8 relative overflow-hidden">
-                    <h2 className="text-[15vw] font-bold uppercase tracking-tighter opacity-10 absolute top-10 right-0 pointer-events-none select-none">About</h2>
                     <div className={`w-full aspect-square max-w-sm mx-auto rounded-2xl border ${theme.border} bg-white/5 backdrop-blur-sm flex items-center justify-center`}>
                         <span className={`text-sm uppercase tracking-widest ${theme.subText}`}>Picture</span>
                     </div>
@@ -121,13 +119,30 @@ export default function MobileLayout({
                     </div>
                     <div className={`${theme.text} p-4 rounded-xl bg-black/5 backdrop-blur-sm text-sm leading-relaxed text-justify space-y-4 border ${theme.border}`}>
                         <p>Hi, I'm Vinz, I help Creative Teams escape production limits and maximize their impact.</p>
-                        <p>With over 12 years of experience as a Lead Artist and Educator, I bridge the gap between traditional artistry and modern efficiency.</p>
+                        <p>With over 12 years of experience as a Lead Artist and Educator, I bridge the gap between traditional artistry and modern efficiency. I do not replace artists; I empower them with Hybrid Design Systems—workflows that let AI handle the repetitive "drafting" so your team can focus entirely on high-fidelity polish and creative strategy.</p>
+
+                        <div className="mt-4">
+                            <h4 className={`text-xs uppercase tracking-widest font-bold ${theme.subText} mb-3`}>My Focus:</h4>
+                            <ul className="space-y-3 list-none pl-0">
+                                <li className="pl-3 border-l-2 border-white/20">
+                                    <span className="font-bold block mb-1">Empowering Artists</span>
+                                    <span className={`${theme.subText} text-xs`}>Training teams to use AI as a tool for control, not a replacement.</span>
+                                </li>
+                                <li className="pl-3 border-l-2 border-white/20">
+                                    <span className="font-bold block mb-1">Protecting Integrity</span>
+                                    <span className={`${theme.subText} text-xs`}>Using AI for the "base," while human taste handles the "finish."</span>
+                                </li>
+                                <li className="pl-3 border-l-2 border-white/20">
+                                    <span className="font-bold block mb-1">Scaling Output</span>
+                                    <span className={`${theme.subText} text-xs`}>Removing bottlenecks so teams can create more without burnout.</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </section>
 
                 {/* WORK */}
                 <section ref={workRef} className="w-full flex flex-col justify-center px-6 py-20 gap-8 relative overflow-hidden">
-                    <h2 className="text-[15vw] font-bold uppercase tracking-tighter opacity-10 absolute top-10 left-0 pointer-events-none select-none">Work</h2>
                     <div className="flex flex-col items-end text-right space-y-6">
                         <h3 className="text-4xl font-bold uppercase tracking-wide" style={{ color: colorScheme.base }}>Featured Projects</h3>
                         <div className="w-20 h-1" style={{ backgroundColor: colorScheme.compString }}></div>
@@ -138,7 +153,7 @@ export default function MobileLayout({
                 </section>
 
                 {/* END */}
-                <div className="pb-8 pt-8 flex items-end justify-center min-h-[30vh]">
+                <div className="pb-24 pt-4 flex items-end justify-center">
                     <span className={`text-[10px] uppercase tracking-widest ${theme.subText} opacity-50`}>— End —</span>
                 </div>
             </div>
@@ -152,6 +167,17 @@ export default function MobileLayout({
                     WebkitBackdropFilter: 'blur(10px)',
                     maskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 100%)',
                     WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 100%)'
+                }}
+            />
+
+            {/* BOTTOM BLUR LAYER (Between Content and Footer) */}
+            <div
+                className="fixed bottom-0 left-0 right-0 h-28 z-[35] pointer-events-none"
+                style={{
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    maskImage: 'linear-gradient(to top, black 0%, black 40%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to top, black 0%, black 40%, transparent 100%)'
                 }}
             />
 
@@ -208,7 +234,7 @@ export default function MobileLayout({
             {/* Bottom Left: Location/Version (Restored Fixed) */}
             <div className={`fixed bottom-6 left-6 z-40 flex flex-col gap-1 text-[10px] uppercase tracking-widest ${theme.text} transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>
                 <div className="opacity-50">Based in Malaysia</div>
-                <div className="opacity-50">© 2026 (v12.36)</div>
+                <div className="opacity-50">© 2026 (v12.37)</div>
             </div>
 
             {/* Bottom Right: Scroll Indicator */}
