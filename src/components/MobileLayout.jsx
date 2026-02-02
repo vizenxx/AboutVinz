@@ -24,12 +24,8 @@ export default function MobileLayout({
     const aboutRef = useRef(null);
     const workRef = useRef(null);
 
-    // Floating menu state
-    const menuRef = useRef(null);
-    const [menuPos, setMenuPos] = useState({ x: 16, y: 16 });
-    const dragging = useRef(false);
-    const dragStart = useRef({ x: 0, y: 0 });
-    const moved = useRef(false);
+    // Fixed menu state
+    // (Dragging logic removed)
 
     // Bio rotation
     useEffect(() => {
@@ -39,63 +35,26 @@ export default function MobileLayout({
         return () => clearInterval(interval);
     }, []);
 
-    // Drag handlers
-    useEffect(() => {
-        const el = menuRef.current;
-        if (!el) return;
-
-        const onStart = (x, y) => {
-            dragging.current = true;
-            moved.current = false;
-            const rect = el.getBoundingClientRect();
-            dragStart.current = { x: x - rect.left, y: y - rect.top };
-        };
-
-        const onMove = (x, y) => {
-            if (!dragging.current) return;
-            moved.current = true;
-            const newX = window.innerWidth - x - (el.offsetWidth - dragStart.current.x);
-            const newY = y - dragStart.current.y;
-            setMenuPos({
-                x: Math.max(8, Math.min(newX, window.innerWidth - el.offsetWidth - 8)),
-                y: Math.max(8, Math.min(newY, window.innerHeight - el.offsetHeight - 8))
-            });
-        };
-
-        const onEnd = () => { dragging.current = false; };
-
-        const touchStart = (e) => {
-            onStart(e.touches[0].clientX, e.touches[0].clientY);
-        };
-        const touchMove = (e) => {
-            // CRITICAL FIX: Do not block scrolling unless we are actively dragging the menu
-            if (!dragging.current) return;
-            if (e.cancelable) e.preventDefault();
-            onMove(e.touches[0].clientX, e.touches[0].clientY);
-        };
-        const mouseDown = (e) => onStart(e.clientX, e.clientY);
-        const mouseMove = (e) => onMove(e.clientX, e.clientY);
-
-        el.addEventListener('touchstart', touchStart, { passive: false });
-        window.addEventListener('touchmove', touchMove, { passive: false });
-        window.addEventListener('touchend', onEnd);
-        el.addEventListener('mousedown', mouseDown);
-        window.addEventListener('mousemove', mouseMove);
-        window.addEventListener('mouseup', onEnd);
-
-        return () => {
-            el.removeEventListener('touchstart', touchStart);
-            window.removeEventListener('touchmove', touchMove);
-            window.removeEventListener('touchend', onEnd);
-            el.removeEventListener('mousedown', mouseDown);
-            window.removeEventListener('mousemove', mouseMove);
-            window.removeEventListener('mouseup', onEnd);
-        };
-    }, []);
+    // Scroll Spy DISABLED FOR PERFORMANCE
+    // useEffect(() => {
+    //     const observer = new IntersectionObserver((entries) => {
+    //         entries.forEach(entry => {
+    //             if (entry.isIntersecting) {
+    //                 if (entry.target === homeRef.current) handlePageChange('home');
+    //                 if (entry.target === aboutRef.current) handlePageChange('about');
+    //                 if (entry.target === workRef.current) handlePageChange('work');
+    //             }
+    //         });
+    //     }, { threshold: 0.3 });
+    //     if (homeRef.current) observer.observe(homeRef.current);
+    //     if (aboutRef.current) observer.observe(aboutRef.current);
+    //     if (workRef.current) observer.observe(workRef.current);
+    //     return () => observer.disconnect();
+    // }, [handlePageChange]);
 
     const scrollTo = (ref) => {
-        if (ref.current && scrollRef.current) {
-            scrollRef.current.scrollTo({ top: ref.current.offsetTop, behavior: 'smooth' });
+        if (ref.current) {
+            ref.current.scrollIntoView({ behavior: 'smooth' });
             setIsMenuOpen(false);
         }
     };
@@ -124,27 +83,29 @@ export default function MobileLayout({
     const overlayText = isLightMode ? 'text-black' : 'text-white';
 
     return (
-        // NATURAL SCROLL CONTAINER
+        // NATURAL SCROLL CONTAINER (No mask for performance)
         <div className="relative w-full z-40">
 
             {/* CONTENT WRAPPER */}
             <div className="w-full flex flex-col">
                 {/* HOME */}
-                <section ref={homeRef} className="w-full flex flex-col justify-between px-6 py-16">
-                    <div className="flex flex-col gap-2">
-                        <h1 className="text-xl font-bold tracking-[0.2em] uppercase" style={{ color: nameColor }}>Vinz Tan</h1>
-                        <div className="flex flex-col text-xs font-light tracking-widest opacity-80">
-                            {roles[currentRoleIndex].split(' ').map((word, i) => (
-                                <span key={i} className={i === 0 ? "font-bold" : ""}>{word}</span>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="flex-1 flex flex-col justify-center items-end text-right py-8">
+                <section ref={homeRef} className="w-full min-h-[100dvh] flex flex-col justify-end px-6 py-24 relative">
+                    {/* Hero Text */}
+                    <div className="flex-1 flex flex-col justify-center items-end text-right py-8 z-10">
                         <div className="text-[9vw] font-bold leading-none tracking-tighter mix-blend-difference">
                             {bios[bioIndex]}
                         </div>
                     </div>
-                    <div className="h-16"></div>
+
+                    {/* Role (Scrollable within Home) */}
+                    <div className={`flex flex-col gap-2 z-10 mt-12 mb-6 ${theme.text}`}>
+                        {/* Constrained container matching "Based in Malaysia" width approx */}
+                        <div className="w-[180px] flex flex-col justify-end">
+                            <h2 className="text-2xl font-bold uppercase tracking-wide leading-tight break-words">
+                                {roles[currentRoleIndex]}
+                            </h2>
+                        </div>
+                    </div>
                 </section>
 
                 {/* ABOUT */}
@@ -177,39 +138,82 @@ export default function MobileLayout({
                 </section>
 
                 {/* END */}
-                <div className="h-32 flex items-center justify-center">
+                <div className="pb-8 pt-8 flex items-end justify-center min-h-[30vh]">
                     <span className={`text-[10px] uppercase tracking-widest ${theme.subText} opacity-50`}>— End —</span>
                 </div>
             </div>
 
-            {/* FIXED UI - Floating Menu */}
+            {/* TOP BLUR LAYER (Between Content and Header) */}
+            {/* Uses backdrop-filter with a gradient mask on ITSELF to fade the blur effect */}
             <div
-                ref={menuRef}
-                className="fixed z-50 touch-none"
-                style={{ top: menuPos.y, right: menuPos.x }}
-            >
-                <div className={`flex flex-col gap-2 ${menuBg} backdrop-blur-md rounded-full p-2 border ${menuBorder} shadow-lg`}>
-                    <button onClick={() => !moved.current && setIsMenuOpen(!isMenuOpen)} className={`p-3 ${isLightMode ? 'bg-black text-white' : 'bg-white text-black'} rounded-full shadow-lg active:scale-90 transition-transform`}>
-                        {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                className="fixed top-0 left-0 right-0 h-28 z-[35] pointer-events-none"
+                style={{
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    maskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 100%)',
+                    WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 40%, transparent 100%)'
+                }}
+            />
+
+            {/* --- FIXED UI OVERLAYS --- */}
+
+            {/* Top Left: Desktop-style Nav (Sticky) */}
+            <div className={`fixed top-6 left-6 z-40 flex flex-col items-start gap-3 ${theme.text} transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>
+                {/* Vinz Tan - Primary unless on Projects */}
+                <button onClick={() => handlePageChange('about')} className="flex items-center group h-5">
+                    <span className="transition-all duration-300 mr-3" style={{
+                        width: activePage === 'about' ? '4px' : '0px',
+                        height: '100%',
+                        backgroundColor: colorScheme.compString,
+                        opacity: activePage === 'about' ? 1 : 0
+                    }} />
+                    <span className={`text-lg font-black tracking-[0.2em] uppercase transition-opacity duration-300 ${activePage === 'about' ? 'opacity-100' : 'opacity-80'}`}
+                        style={{ color: activePage === 'work' ? 'inherit' : nameColor }}>
+                        Vinz Tan
+                    </span>
+                </button>
+
+                {/* Projects (Work) - Active only on Work */}
+                <button onClick={() => handlePageChange('work')} className="flex items-center group h-5">
+                    <span className="transition-all duration-300 mr-3" style={{
+                        width: activePage === 'work' ? '4px' : '0px',
+                        height: '100%',
+                        backgroundColor: colorScheme.compString,
+                        opacity: activePage === 'work' ? 1 : 0
+                    }} />
+                    <span className={`text-base font-bold tracking-[0.2em] uppercase transition-opacity duration-300 ${activePage === 'work' ? 'opacity-100' : 'opacity-60'}`} style={{ color: activePage === 'work' ? colorScheme.base : 'inherit' }}>
+                        Projects
+                    </span>
+                </button>
+            </div>
+
+            {/* Top Right: Floating Pill Menu (Restored) */}
+            <div className={`fixed top-6 right-6 z-50`}>
+                <div className={`flex items-center gap-1 p-1.5 rounded-full border shadow-lg transition-colors duration-300 ${theme.border} ${isLightMode ? 'bg-white/95' : 'bg-black/80'}`}>
+                    {/* Menu Toggle */}
+                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-2 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
+                        {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
                     </button>
-                    <button onClick={() => !moved.current && setIsColorPinned(!isColorPinned)} className={`p-2.5 rounded-full transition-all ${isColorPinned ? (isLightMode ? 'bg-black text-white' : 'bg-white text-black') : `bg-transparent ${menuIcon}`}`}>
-                        <PinIcon size={18} className={isColorPinned ? 'fill-current' : ''} />
+                    {/* Pin Color */}
+                    <button onClick={() => setIsColorPinned(!isColorPinned)} className={`p-2 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
+                        <PinIcon size={16} className={isColorPinned ? 'fill-current' : ''} />
                     </button>
-                    <button onClick={() => !moved.current && setIsLightMode(!isLightMode)} className={`p-2.5 rounded-full bg-transparent ${menuIcon}`}>
-                        {isLightMode ? <Moon size={18} /> : <Sun size={18} />}
+                    {/* Theme Toggle */}
+                    <button onClick={() => setIsLightMode(!isLightMode)} className={`p-2 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
+                        {isLightMode ? <Moon size={16} /> : <Sun size={16} />}
                     </button>
                 </div>
             </div>
 
-            {/* Scroll Hint */}
-            <div className={`fixed bottom-6 left-6 z-40 text-[10px] uppercase tracking-widest opacity-50 animate-pulse ${theme.text} pointer-events-none`}>
-                Scroll ↓
+            {/* Bottom Left: Location/Version (Restored Fixed) */}
+            <div className={`fixed bottom-6 left-6 z-40 flex flex-col gap-1 text-[10px] uppercase tracking-widest ${theme.text} transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>
+                <div className="opacity-50">Based in Malaysia</div>
+                <div className="opacity-50">© 2026 (v12.35)</div>
             </div>
 
-            {/* Footer */}
-            <div className={`fixed bottom-6 right-6 z-40 text-[10px] uppercase tracking-widest opacity-50 text-right ${theme.text} pointer-events-none`}>
-                <div>Based in Malaysia</div>
-                <div>© 2026 (v12.34)</div>
+            {/* Bottom Right: Scroll Indicator */}
+            <div className={`fixed bottom-6 right-6 z-40 transition-opacity duration-500 ${isMenuOpen ? 'opacity-0' : 'opacity-100'} ${activePage === 'work' ? 'opacity-0' : 'opacity-100'}`}>
+                <div className={`text-[10px] uppercase tracking-widest opacity-50 ${theme.text}`}>Scroll ↓</div>
             </div>
 
             {/* Menu Overlay */}
