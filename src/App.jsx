@@ -324,9 +324,9 @@ export default function App() {
   useEffect(() => {
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) {
-      meta.setAttribute('content', isLightMode ? BG_LIGHT : BG_DARK);
+      meta.setAttribute('content', pageBg);
     }
-  }, [isLightMode]);
+  }, [isLightMode, pageBg]);
 
   const theme = {
     text: isLightMode ? 'text-[#18181b]' : 'text-[#ededed]',
