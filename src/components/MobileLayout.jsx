@@ -35,26 +35,22 @@ export default function MobileLayout({
         return () => clearInterval(interval);
     }, []);
 
-    // Scroll Spy (Trigger active state on scroll)
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // console.log("Visible:", entry.target);
-                    // Update active page based on visible section
-                    if (entry.target === homeRef.current) handlePageChange('home');
-                    if (entry.target === aboutRef.current) handlePageChange('about');
-                    if (entry.target === workRef.current) handlePageChange('work');
-                }
-            });
-        }, { threshold: 0.3 }); // Lower threshold for better mobile detection
-
-        if (homeRef.current) observer.observe(homeRef.current);
-        if (aboutRef.current) observer.observe(aboutRef.current);
-        if (workRef.current) observer.observe(workRef.current);
-
-        return () => observer.disconnect();
-    }, [handlePageChange]);
+    // Scroll Spy DISABLED FOR PERFORMANCE TESTING
+    // useEffect(() => {
+    //     const observer = new IntersectionObserver((entries) => {
+    //         entries.forEach(entry => {
+    //             if (entry.isIntersecting) {
+    //                 if (entry.target === homeRef.current) handlePageChange('home');
+    //                 if (entry.target === aboutRef.current) handlePageChange('about');
+    //                 if (entry.target === workRef.current) handlePageChange('work');
+    //             }
+    //         });
+    //     }, { threshold: 0.3 });
+    //     if (homeRef.current) observer.observe(homeRef.current);
+    //     if (aboutRef.current) observer.observe(aboutRef.current);
+    //     if (workRef.current) observer.observe(workRef.current);
+    //     return () => observer.disconnect();
+    // }, [handlePageChange]);
 
     const scrollTo = (ref) => {
         if (ref.current) {
@@ -185,7 +181,7 @@ export default function MobileLayout({
 
             {/* Top Right: Floating Pill Menu (Restored) */}
             <div className={`fixed top-6 right-6 z-50`}>
-                <div className={`flex items-center gap-1 p-1.5 rounded-full border shadow-lg backdrop-blur-md transition-colors duration-300 ${theme.border} ${isLightMode ? 'bg-white/90' : 'bg-black/60'}`}>
+                <div className={`flex items-center gap-1 p-1.5 rounded-full border shadow-lg transition-colors duration-300 ${theme.border} ${isLightMode ? 'bg-white/95' : 'bg-black/80'}`}>
                     {/* Menu Toggle */}
                     <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-2 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
                         {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -204,7 +200,7 @@ export default function MobileLayout({
             {/* Bottom Left: Location/Version (Restored Fixed) */}
             <div className={`fixed bottom-6 left-6 z-40 flex flex-col gap-1 text-[10px] uppercase tracking-widest ${theme.text} transition-opacity duration-300 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>
                 <div className="opacity-50">Based in Malaysia</div>
-                <div className="opacity-50">© 2026 (v12.32)</div>
+                <div className="opacity-50">© 2026 (v12.33)</div>
             </div>
 
             {/* Bottom Right: Scroll Indicator */}
