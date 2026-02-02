@@ -41,7 +41,10 @@ export default function App() {
   const [isLightMode, setIsLightMode] = useState(false);
   const [isColorPinned, setIsColorPinned] = useState(false);
   const [activePage, setActivePage] = useState('home');
-  // FIX: Initialize with function to check immediately to avoid double-render (Desktop -> Mobile)
+  //  // Debug Version
+  useEffect(() => { console.log('Portfolio Version: v12.53'); }, []);
+
+  // Initialize Theme & Stateion to check immediately to avoid double-render (Desktop -> Mobile)
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
 
   useEffect(() => {
