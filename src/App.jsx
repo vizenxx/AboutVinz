@@ -41,8 +41,8 @@ export default function App() {
   const [isLightMode, setIsLightMode] = useState(false);
   const [isColorPinned, setIsColorPinned] = useState(false);
   const [activePage, setActivePage] = useState('home');
-  //  // Debug Version
-  useEffect(() => { console.log('Portfolio Version: v12.53'); }, []);
+  // Debug Version
+  useEffect(() => { console.log('Portfolio Version: v12.75 (Dynamic UI + Menu)'); }, []);
 
   // Initialize Theme & Stateion to check immediately to avoid double-render (Desktop -> Mobile)
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
@@ -221,10 +221,28 @@ export default function App() {
     return HSLToRGBString(h, sMuted, lMuted);
   }, [colorScheme, isLightMode]);
 
-  // Apply background color to document root (global)
+  // Apply background color to document root (global) & Sync Safari Theme Color (Aggressive)
   useEffect(() => {
+    // 1. CSS Variable for components
     document.documentElement.style.setProperty('--page-bg', pageBg);
-  }, [pageBg]);
+
+    // 2. Explicit Body Background (Crucial for Safari overscroll area)
+    document.body.style.backgroundColor = pageBg;
+
+    // 3. Sync Meta Tag for Safari UI
+    const syncThemeColor = () => {
+      let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (!metaThemeColor) {
+        metaThemeColor = document.createElement('meta');
+        metaThemeColor.name = "theme-color";
+        document.head.appendChild(metaThemeColor);
+      }
+      metaThemeColor.setAttribute("content", pageBg);
+    };
+
+    syncThemeColor();
+    console.log(`v12.74 Sync: Theme[${isLightMode ? 'LIGHT' : 'DARK'}] Color[${pageBg}]`);
+  }, [pageBg, isLightMode]);
 
   const cursorRef = useRef(null); const spotlightRef = useRef(null); const rippleCanvasRef = useRef(null);
 
@@ -299,6 +317,8 @@ export default function App() {
     };
     window.addEventListener('mousemove', handleMouseMove);
     const handlePointerDown = (e) => {
+      // Prevent ripple if clicking on the mobile menu (drag or buttons)
+      if (e.target.closest('#mobile-menu-pill')) return;
       clickRipplesRef.current.push({ x: e.clientX, y: e.clientY, startTime: Date.now(), baseRadius: 10, maxRadius: CLICK_CONFIG.maxRadius, lifespan: CLICK_CONFIG.lifespan });
     };
     window.addEventListener('pointerdown', handlePointerDown);
@@ -348,17 +368,19 @@ export default function App() {
         <div ref={containerRef} className={`relative w-full transition-colors duration-500 ease-in-out font-sans ${theme.text} ${theme.selection} ${isMobile ? '' : 'overflow-hidden'}`} style={{ '--muted-color': mutedColor }}>
 
           {/* UNIFIED BACKGROUNDS (Spotlight + Noise + Ripple) with Top/Bottom Edge Fade */}
-          <div className="fixed inset-0 z-0 pointer-events-none" style={{
-            display: 'none',
-            maskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%)'
+          <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000" style={{
+            opacity: 1,
+            maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)'
           }}>
             <canvas ref={spotlightRef} className="absolute inset-0 z-0 transition-opacity duration-1000 scale-125 pointer-events-none" style={{ filter: isMobile ? 'blur(40px)' : 'blur(100px)' }} />
-            <div className="absolute inset-0 z-1 pointer-events-none" style={{ backdropFilter: isMobile ? 'none' : 'blur(30px) saturate(1.2)', WebkitBackdropFilter: isMobile ? 'none' : 'blur(30px) saturate(1.2)', backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E")`, mixBlendMode: isLightMode ? 'plus-lighter' : 'overlay', opacity: isLightMode ? 0.6 : 0.4 }} />
+            <div className="absolute inset-0 z-1 pointer-events-none" style={{ backdropFilter: isMobile ? 'none' : 'blur(30px) saturate(1.2)', WebkitBackdropFilter: isMobile ? 'none' : 'blur(30px) saturate(1.2)', mixBlendMode: isLightMode ? 'plus-lighter' : 'overlay', opacity: isLightMode ? 0.6 : 0.4 }} />
+
             <canvas ref={rippleCanvasRef} className="absolute inset-0 z-20 pointer-events-none" />
           </div>
           {!isMobile && <div ref={cursorRef} className={`fixed top-0 left-0 w-6 h-6 border ${isLightMode ? 'border-black' : 'border-white'} rounded-full pointer-events-none z-[60] mix-blend-difference -translate-x-1/2 -translate-y-1/2 hidden md:block transition-transform duration-75 ease-out`} />}
-          {!isMobile && <div className="fixed inset-0 pointer-events-none z-[50] opacity-[0.07] mix-blend-overlay user-select-none"><svg className="w-full h-full"><filter id="globalNoise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" /></filter><rect width="100%" height="100%" filter="url(#globalNoise)" /></svg></div>}
+          {/* {!isMobile && <div className="fixed inset-0 pointer-events-none z-[50] opacity-[0.07] mix-blend-overlay user-select-none"><svg className="w-full h-full"><filter id="globalNoise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" /></filter><rect width="100%" height="100%" filter="url(#globalNoise)" /></svg></div>} */}
+
 
           {/* CONTENT */}
           <div className={`relative z-10 ${isMobile ? '' : 'h-full w-full'}`}>
