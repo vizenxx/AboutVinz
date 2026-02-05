@@ -172,35 +172,43 @@ export default function MobileLayout({
     const [bioIndex, setBioIndex] = useState(0);
     const [isRoleExpanded, setIsRoleExpanded] = useState(false);
 
-    // --- ENTRANCE ANIMATION (Mobile UI/UX Expert) ---
+    // --- ENTRANCE ANIMATION (Specifically Timed Sequence) ---
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
-            const tl = gsap.timeline({ defaults: { ease: "power4.out", duration: 1.0 } });
+            const tl = gsap.timeline({ defaults: { ease: "power3.out", duration: 1.0 } });
 
-            // Initial state
-            gsap.set(".mobile-hero-line, .mobile-role-box, #mobile-menu-pill, .mobile-footer-item", {
-                opacity: 0,
-                y: 15,
-                filter: "blur(5px)"
-            });
+            // 1. Initial State
+            gsap.set(".mobile-hero-line", { opacity: 0 });
+            gsap.set(".mobile-role-box", { opacity: 0, y: 30 });
+            gsap.set(".mobile-footer-item", { opacity: 0, x: (i) => i % 2 === 0 ? -40 : 40 });
+            gsap.set("#mobile-menu-pill", { opacity: 0, scale: 0.8 });
 
-            // Sequence
+            // 2. Orchestration Sequence
+            // - 0s: Name/Projects (Immediate highlight via Atmosphere/Persistent)
+
+            // - 0.3s: Slogan (Action: Hero Lines)
             tl.to(".mobile-hero-line", {
-                opacity: 1, y: 0, filter: "blur(0px)",
-                stagger: 0.1, duration: 1.2, delay: 0.5
-            })
-                .to("#mobile-menu-pill", {
-                    opacity: 1, y: 0, filter: "blur(0px)",
-                    duration: 1.0
-                }, "-=0.8")
+                opacity: 1,
+                duration: 1.2,
+                stagger: 0.12
+            }, 0.3)
+
+                // - 0.5s: Role & Menu Pill
                 .to(".mobile-role-box", {
-                    opacity: 1, y: 0, filter: "blur(0px)",
-                    duration: 1.0
-                }, "-=0.6")
+                    opacity: 1, y: 0,
+                    duration: 1.2
+                }, 0.5)
+                .to("#mobile-menu-pill", {
+                    opacity: 1, scale: 1,
+                    duration: 1.2
+                }, 0.5)
+
+                // - 0.5s: Icons and Based (X-axis slide)
                 .to(".mobile-footer-item", {
-                    opacity: 1, y: 0, filter: "blur(0px)",
+                    opacity: 1, x: 0,
+                    duration: 1.2,
                     stagger: 0.1
-                }, "-=0.8");
+                }, 0.5);
 
         }, comp);
         return () => ctx.revert();

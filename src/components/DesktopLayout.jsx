@@ -58,43 +58,52 @@ export default function DesktopLayout({
         }
     }, [activePage]);
 
-    // --- ENTRANCE ANIMATION (Mature UI/UX Approach) ---
+    // --- ENTRANCE ANIMATION (Specifically Timed Sequence) ---
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
-            const tl = gsap.timeline({ defaults: { ease: "power4.out", duration: 1.2 } });
+            const tl = gsap.timeline({ defaults: { ease: "power3.out", duration: 1.0 } });
 
-            // 1. Initial State: Set items hidden but avoid display:none to preserve layout
-            gsap.set(".hl-container, .cl-container, .fl-container, .hero-line, .corner-ui, .scroll-indicator", {
-                opacity: 0,
-                y: 20,
-                filter: "blur(10px)"
-            });
+            // 1. Initial States (Hidden/Offset)
+            gsap.set(".hl-container", { opacity: 0, filter: "brightness(2)" });
+            gsap.set(".hero-line", { opacity: 0 }); // Slogan
+            gsap.set(".cl-container", { opacity: 0, y: 30 }); // Role
+            gsap.set(".fl-container", { opacity: 0, x: -40 }); // Based (Left)
+            gsap.set(".corner-ui", { opacity: 0, x: 40 }); // Icons (Right)
+            gsap.set(".scroll-indicator", { opacity: 0, filter: "blur(12px)", scale: 0.9 });
 
-            // 2. Orchestration Sequence
+            // 2. Orchestrated Sequence
+            // - 0s: Name and Projects (Highlight Entry)
             tl.to(".hl-container", {
-                opacity: 1, y: 0, filter: "blur(0px)",
-                stagger: 0.1, duration: 1.5, delay: 0.3
-            })
+                opacity: 1, filter: "brightness(1)",
+                duration: 1.2
+            }, 0)
+
+                // - 0.3s: Slogan (HackerText entry)
                 .to(".hero-line", {
-                    opacity: 1, y: 0, filter: "blur(0px)",
-                    stagger: 0.15, duration: 1.8
-                }, "-=1.2")
+                    opacity: 1,
+                    duration: 0.8,
+                    stagger: 0.1
+                }, 0.3)
+
+                // - 0.5s: Role (Bottom in from original location)
                 .to(".cl-container", {
-                    opacity: 1, y: 0, filter: "blur(0px)",
-                    duration: 1.5
-                }, "-=1.4")
-                .to(".fl-container", {
-                    opacity: 1, y: 0, filter: "blur(0px)",
+                    opacity: 1, y: 0,
                     duration: 1.2
-                }, "-=1.2")
-                .to(".corner-ui", {
-                    opacity: 1, y: 0, filter: "blur(0px)",
-                    stagger: 0.1, duration: 1.2
-                }, "-=1.0")
+                }, 0.5)
+
+                // - 0.5s: Icons and Based (Slide in from outside x-axis)
+                .to(".fl-container", { opacity: 1, x: 0, duration: 1.2 }, 0.5)
+                .to(".corner-ui", { opacity: 1, x: 0, duration: 1.2 }, "<")
+
+                // SET 2: After Set 1 is mostly complete
+                // - After 1: Scroll for more (Remain blur in)
                 .to(".scroll-indicator", {
-                    opacity: 1, y: 0, filter: "blur(0px)",
-                    duration: 1.5
-                }, "-=0.8");
+                    opacity: 0.6, // Pulse will handle the final view, keep it soft
+                    filter: "blur(0px)",
+                    scale: 1,
+                    duration: 2.5,
+                    ease: "sine.inOut"
+                }, "+=0.2");
 
         }, comp);
         return () => ctx.revert();
