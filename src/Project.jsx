@@ -44,7 +44,7 @@ const projects = [
                         ]
                     },
                     {
-                        pivot: "From murals to full brand visuals",
+                        pivot: "From Mural to Full Brand Visual",
                         targetId: "process-1",
                         paragraphs: [
                             "As the project progressed, something unexpected happened. Teammates and clients grew increasingly happy with how the design was shaping up. They began to see its potential not just as a mural but as a flexible brand visual. Together, we decided to take that step, and with AI helping to adapt and refine the artwork, the transition was smoother than anyone expected.",
@@ -573,7 +573,7 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
                                         <div key={i} className="flex flex-col gap-2">
                                             <span className={`text-[8px] uppercase tracking-[0.2em] font-bold ${theme.subText} opacity-30`}>{m.label}</span>
                                             {m.label === "Cooperator" ? (
-                                                <a href="https://risingformula.com/team" target="_blank" rel="noopener noreferrer" className={`text-[10px] font-content uppercase tracking-[0.05em] ${theme.text} underline underline-offset-[6px] decoration-current/10 hover:decoration-current/40 transition-all font-medium truncate pr-2`}>
+                                                <a href="https://risingformula.com/work" target="_blank" rel="noopener noreferrer" className={`text-[10px] font-content uppercase tracking-[0.05em] ${theme.text} underline underline-offset-[6px] decoration-current/60 hover:decoration-current/100 transition-all font-medium truncate pr-2`}>
                                                     {m.value}
                                                 </a>
                                             ) : (
@@ -715,7 +715,7 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
                     <div className="w-full h-auto flex flex-col gap-2 pt-6 mt-auto border-t border-white/5">
                         <div className="flex justify-between items-center py-2 h-6">
                             <span className={`text-[10px] uppercase font-primary tracking-widest ${theme.text} opacity-50`}>Cooperator</span>
-                            <a href="https://risingformula.com/team" target="_blank" rel="noopener noreferrer" className={`text-[11px] font-content ${theme.text} relative group`}>
+                            <a href="https://risingformula.com/work" target="_blank" rel="noopener noreferrer" className={`text-[11px] font-content ${theme.text} relative group`}>
                                 {activeProject.meta.find(m => m.label === "Cooperator")?.value || activeProject.meta[0].value}
                                 <span className={`absolute bottom-0 left-0 w-full h-[1px] bg-current opacity-20 group-hover:opacity-100 transition-opacity duration-300`} />
                             </a>
