@@ -370,7 +370,7 @@ export default function MobileLayout({
                     if (entry.target === workRef.current) handlePageChange('work');
                 }
             });
-        }, { threshold: 0.3 });
+        }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
         if (homeRef.current) observer.observe(homeRef.current);
         if (aboutRef.current) observer.observe(aboutRef.current);
         if (workRef.current) observer.observe(workRef.current);
@@ -413,6 +413,17 @@ export default function MobileLayout({
     // Show only at the very top or when project meta appears at bottom
     const shouldShowFooter = isAtTop || isAtBottom;
 
+    // Force correct nav state at bottom of page
+    useEffect(() => {
+        if (isAtBottom) handlePageChange('work');
+    }, [isAtBottom, handlePageChange]);
+
+    const handleNavClick = (page) => {
+        handlePageChange(page);
+        if (page === 'about') scrollTo(aboutRef);
+        if (page === 'work') scrollTo(workRef);
+    };
+
     return (
         // NATURAL SCROLL CONTAINER (No mask for performance)
         <div className={`relative w-full z-40 ${theme.text}`} onClick={() => setIsRoleExpanded(false)}>
@@ -421,23 +432,20 @@ export default function MobileLayout({
             <div className="w-full flex flex-col">
                 {/* HOME */}
                 <section ref={homeRef} id="home" className="w-full min-h-[100dvh] px-6 relative flex flex-col pt-24">
-
-                    {/* Hero Text (Bio) - justify-center items-end */}
+                    {/* ... content truncated ... */}
+                    {/* Hero Text ... */}
                     <div className="flex flex-col justify-center items-end text-right py-12 z-10 h-[60vh]">
                         <div className="text-[8.5vw] font-bold leading-none tracking-tighter mix-blend-difference font-primary">
                             {bios[bioIndex]}
                         </div>
                     </div>
-
-
-
-                    {/* Role (Responsive Width) - Fixed Bottom at 15%, Grow Upwards */}
+                    {/* ... content truncated ... */}
+                    {/* Role ... */}
                     <div
                         className={`absolute bottom-[15%] left-[24px] z-20 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${theme.text} pointer-events-auto`}
                         style={{ width: '40vw' }}
                     >
-
-
+                        {/* ... content truncated ... */}
                         <div
                             className="flex flex-col justify-end items-start text-left cursor-pointer overflow-visible gap-0"
                             onClick={(e) => {
@@ -610,7 +618,7 @@ export default function MobileLayout({
                 style={{ pointerEvents: isMenuOpen ? 'none' : 'auto' }}>
 
                 {/* Vinz Tan */}
-                <button onClick={() => handlePageChange('about')} className={`flex items-center group h-5 transition-all ${overlap.topLeft ? 'flex-row-reverse' : ''}`}>
+                <button onClick={() => handleNavClick('about')} className={`flex items-center group h-5 transition-all ${overlap.topLeft ? 'flex-row-reverse' : ''}`}>
                     <span className={`transition-all duration-300 ${overlap.topLeft ? 'ml-3' : 'mr-3'}`} style={{
                         width: activePage === 'about' ? '4px' : '0px',
                         height: '100%',
@@ -626,7 +634,7 @@ export default function MobileLayout({
 
 
                 {/* Projects */}
-                <button onClick={() => handlePageChange('work')} className={`flex items-center group h-5 transition-all ${overlap.topLeft ? 'flex-row-reverse' : ''}`}>
+                <button onClick={() => handleNavClick('work')} className={`flex items-center group h-5 transition-all ${overlap.topLeft ? 'flex-row-reverse' : ''}`}>
                     <span className={`transition-all duration-300 ${overlap.topLeft ? 'ml-3' : 'mr-3'}`} style={{
                         width: activePage === 'work' ? '4px' : '0px',
                         height: '100%',

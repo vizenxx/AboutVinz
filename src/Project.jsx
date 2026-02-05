@@ -13,7 +13,7 @@ const projects = [
         title: "LuckBros",
         subtitle: "AIGC INTEGRATED SPATIAL DESIGN",
         meta: [
-            { label: "Cooperator", value: "Rising Formula" },
+            { label: "Cooperator", value: "Rising Formula Design Studio" },
             { label: "Type", value: "Mural & Branding" },
         ],
         description: [
@@ -570,10 +570,10 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
 
                                 <div className="grid grid-cols-2 gap-x-6 gap-y-7 border-t border-white/5 pt-8">
                                     {activeProject.meta.map((m, i) => (
-                                        <div key={i} className="flex flex-col gap-2">
+                                        <div key={i} className={`flex flex-col gap-2 ${m.label === 'Cooperator' ? 'col-span-2' : ''}`}>
                                             <span className={`text-[8px] uppercase tracking-[0.2em] font-bold ${theme.subText} opacity-30`}>{m.label}</span>
                                             {m.label === "Cooperator" ? (
-                                                <a href="https://risingformula.com/work" target="_blank" rel="noopener noreferrer" className={`text-[10px] font-content uppercase tracking-[0.05em] ${theme.text} underline underline-offset-[6px] decoration-current/60 hover:decoration-current/100 transition-all font-medium truncate pr-2`}>
+                                                <a href="https://risingformula.com/work" target="_blank" rel="noopener noreferrer" className={`text-[10px] font-content uppercase tracking-[0.05em] ${theme.text} underline underline-offset-[4px] decoration-current hover:decoration-current/60 transition-all font-medium break-words pr-2 block`}>
                                                     {m.value}
                                                 </a>
                                             ) : (
@@ -712,16 +712,16 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 h-[30vh] w-[2px] bg-[#808080] opacity-20 rounded-full group-hover:opacity-40 transition-opacity duration-300">
                         <div className="w-full rounded-full" style={{ height: '20%', top: `${narrativeProgress * 80}%`, position: 'absolute', backgroundColor: isLightMode ? '#000' : '#fff', opacity: 0.8 }} />
                     </div>
-                    <div className="w-full h-auto flex flex-col gap-2 pt-6 mt-auto border-t border-white/5">
-                        <div className="flex justify-between items-center py-2 h-6">
-                            <span className={`text-[10px] uppercase font-primary tracking-widest ${theme.text} opacity-50`}>Cooperator</span>
-                            <a href="https://risingformula.com/work" target="_blank" rel="noopener noreferrer" className={`text-[11px] font-content ${theme.text} relative group`}>
+                    <div className="w-full h-auto flex flex-col gap-4 pt-6 mt-auto border-t border-white/5 text-left">
+                        <div className="flex flex-col gap-1">
+                            <span className={`text-[8px] uppercase font-primary tracking-widest ${theme.text} opacity-50`}>Cooperator</span>
+                            <a href="https://risingformula.com/work" target="_blank" rel="noopener noreferrer" className={`text-[11px] font-content ${theme.text} relative group w-fit`}>
                                 {activeProject.meta.find(m => m.label === "Cooperator")?.value || activeProject.meta[0].value}
                                 <span className={`absolute bottom-0 left-0 w-full h-[1px] bg-current opacity-20 group-hover:opacity-100 transition-opacity duration-300`} />
                             </a>
                         </div>
-                        <div className="flex justify-between items-center py-2 h-6 border-t border-white/5">
-                            <span className={`text-[10px] uppercase font-primary tracking-widest ${theme.text} opacity-50`}>Type</span>
+                        <div className="flex flex-col gap-1">
+                            <span className={`text-[8px] uppercase font-primary tracking-widest ${theme.text} opacity-50`}>Type</span>
                             <span className={`text-[11px] font-content ${theme.text}`}>{activeProject.meta.find(m => m.label === "Type")?.value}</span>
                         </div>
                     </div>
