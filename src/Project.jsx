@@ -400,7 +400,7 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
 
         const handleMouseMove = (e) => {
             if (!scrollPhysics.current.isDragging) return;
-            const delta = (scrollPhysics.current.lastY - e.clientY) * 1.5;
+            const delta = (scrollPhysics.current.lastY - e.clientY) * 1.9;
             scrollPhysics.current.lastY = e.clientY;
             scrollPhysics.current.targetY += delta;
             scrollPhysics.current.velocity = delta;
@@ -449,16 +449,25 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
                 const diff = p.targetY - p.currentY;
                 if (Math.abs(diff) < 0.0001) { p.currentY = p.targetY; p.momentum = 0; }
                 else { p.currentY += diff * 0.1; }
-            } else { p.currentY += (p.targetY - p.currentY) * 0.15; }
+            } else { p.currentY += (p.targetY - p.currentY) * 0.19; }
 
             container.scrollTop = p.currentY;
             const v = p.targetY - p.currentY; const vAbs = Math.abs(v);
-            const rotation = Math.max(-12, Math.min(12, v * 0.1));
-            const scaleY = 1 + Math.min(vAbs * 0.0015, 0.15);
-            const skew = Math.max(-6, Math.min(6, v * 0.06));
+            // Enhanced "Jelly" Physics (v13.92)
+            // Curvature: Uses border-radius and slightly stronger rotation to simulate fluid bending
+            const rotation = Math.max(-16, Math.min(16, v * 0.16));
+            const scaleY = 1 + Math.min(vAbs * 0.0035, 0.25);
+            const skew = Math.max(-12, Math.min(12, v * 0.12));
+            const curveRadius = Math.min(100, vAbs * 0.8); // 0 to 100px based on speed
 
             const wrappers = container.querySelectorAll('.project-image-wrapper');
-            wrappers.forEach(el => { el.style.transform = `perspective(1200px) rotateX(${rotation}deg) skewY(${skew}deg) scaleY(${scaleY})`; });
+            wrappers.forEach(el => {
+                el.style.transform = `perspective(1200px) rotateX(${rotation}deg) skewY(${skew}deg) scaleY(${scaleY})`;
+                // Apply dynamic curvature (Jelly effect)
+                el.style.borderRadius = `${curveRadius}px`;
+                // Add slight scale adjustment to compensate for radius shrinking visual area
+                if (curveRadius > 5) el.style.scale = `${1 + (curveRadius * 0.0005)}`;
+            });
 
             const rect_container = container.getBoundingClientRect();
             const center_container = rect_container.top + rect_container.height / 2;
@@ -644,7 +653,7 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
         <div className="w-full h-full flex flex-col justify-center pointer-events-auto overflow-visible" onWheel={(e) => e.stopPropagation()}>
             <div className={`w-full h-full flex flex-col md:flex-row relative overflow-visible`}>
                 <div className="w-full h-1/2 md:h-full relative min-w-0 flex-shrink-0 overflow-visible">
-                    <div ref={imageContainerRef} className="w-[110%] -ml-[5%] px-[5%] h-full overflow-y-auto scrollbar-none cursor-grab select-none relative" onScroll={handleScrollUpdate} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'none' }}>
+                    <div ref={imageContainerRef} className="w-[calc(100%+400px)] -ml-[200px] px-[200px] h-full overflow-y-auto scrollbar-none cursor-grab select-none relative" onScroll={handleScrollUpdate} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'none' }}>
                         <div className="flex flex-col w-full gap-12 py-[50vh] transition-transform duration-150 overflow-visible relative">
                             {activeProject.images.map((img) => (
                                 <div key={img.id} id={`proj-img-${img.id}`} className="project-image-wrapper relative group overflow-visible flex-shrink-0 w-full h-auto rounded-[2px] will-change-transform cursor-inherit">
