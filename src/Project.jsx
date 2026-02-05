@@ -332,7 +332,6 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
 
     const [portalTarget, setPortalTarget] = useState(null);
     const [rpcTarget, setRpcTarget] = useState(null);
-    const displacementRef = useRef(null); // Ref for U-curve SVG filter
 
     useEffect(() => {
         if (!isMobile) {
@@ -459,41 +458,23 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
 
             container.scrollTop = p.currentY;
             const v = p.targetY - p.currentY; const vAbs = Math.abs(v);
-            const direction = v > 0 ? 1 : -1; // 1 = scrolling down, -1 = scrolling up
-
-            // Enhanced "Jelly" Physics with Horizontal Curve (v14.0)
-            // Vertical effects
-            const rotateX = Math.max(-16, Math.min(16, v * 0.16));
-            const scaleY = 1 + Math.min(vAbs * 0.0035, 0.25);
-            const skewY = Math.max(-12, Math.min(12, v * 0.12));
-
-            // Horizontal curvy effects - creates wave-like horizontal distortion
-            const skewX = Math.max(-8, Math.min(8, v * 0.06)); // Horizontal shear
-            const rotateY = Math.max(-6, Math.min(6, v * 0.04)); // Subtle horizontal tilt
-
-            // Asymmetric border-radius for directional curve effect
-            // When scrolling down: more curve on bottom, less on top (and vice versa)
-            const baseRadius = Math.min(80, vAbs * 0.6);
-            const topRadius = direction > 0 ? baseRadius * 0.3 : baseRadius;
-            const bottomRadius = direction > 0 ? baseRadius : baseRadius * 0.3;
+            // Enhanced "Jelly" Physics (v13.92)
+            // Curvature: Uses border-radius and slightly stronger rotation to simulate fluid bending
+            const rotation = Math.max(-45, Math.min(25, v * 0.16));
+            const scaleY = 1 + Math.min(vAbs * 0.0015, 0.25);
+            const skew = Math.max(-5, Math.min(10, v * 0.12));
+            const curveRadius = Math.min(50, vAbs * 0.8); // 0 to 100px based on speed
 
             const wrappers = container.querySelectorAll('.project-image-wrapper');
             wrappers.forEach(el => {
-                el.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) skewY(${skewY}deg) skewX(${skewX}deg) scaleY(${scaleY})`;
-                // Apply asymmetric curvature (directional jelly effect)
-                el.style.borderRadius = `${topRadius}px ${topRadius}px ${bottomRadius}px ${bottomRadius}px`;
-                // Scale adjustment
-                if (baseRadius > 5) el.style.scale = `${1 + (baseRadius * 0.0006)}`;
-                // Apply U-curve filter
-                const curveIntensity = Math.min(25, vAbs * 0.2);
-                el.style.filter = curveIntensity > 1 ? `url(#uCurveFilter)` : 'none';
+                el.style.transform = `perspective(2000px) rotateX(${rotation}deg) skewY(${skew}deg) scaleY(${scaleY})`;
+                // Apply dynamic curvature (Jelly effect)
+                el.style.borderRadius = `${curveRadius}px`;
+                // Compression effect: Shrink base scale slightly when moving, then add curvature compensation
+                const movementShrink = Math.min(1, vAbs * 0.0004); // Up to 6% shrink at speed
+                const finalScale = 1 - movementShrink + (curveRadius * 0.00075);
+                el.style.scale = `${finalScale}`;
             });
-
-            // Update SVG displacement filter intensity for U-curve
-            if (displacementRef.current) {
-                const curveScale = Math.min(30, vAbs * 0.25) * direction;
-                displacementRef.current.setAttribute('scale', curveScale);
-            }
 
             const rect_container = container.getBoundingClientRect();
             const center_container = rect_container.top + rect_container.height / 2;
@@ -575,7 +556,7 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
             if (narrativeMax > 0 && !p.passToImages) {
                 if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) {
                     // Scroll within narrative
-                    p.targetY += delta * 1.5;
+                    p.targetY += delta * 0.05;
                     p.velocity = delta * 1.5;
                     p.targetY = Math.max(0, Math.min(p.targetY, narrativeMax));
                     return;
@@ -586,7 +567,7 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
             }
 
             // Pass to images
-            const imageDelta = delta * 1.9;
+            const imageDelta = delta * 3.5;
             scrollPhysics.current.targetY += imageDelta;
             scrollPhysics.current.velocity = imageDelta;
             const imageMax = imageContainer.scrollHeight - imageContainer.clientHeight;
@@ -751,15 +732,6 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
     // DESKTOP RENDER
     return (
         <div className="w-full h-full flex flex-col justify-center pointer-events-auto overflow-visible" onWheel={(e) => e.stopPropagation()}>
-            {/* SVG Filter for U-Curve Distortion */}
-            <svg width="0" height="0" style={{ position: 'absolute' }}>
-                <defs>
-                    <filter id="uCurveFilter" x="-20%" y="-20%" width="140%" height="140%">
-                        <feImage xlinkHref="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3ClinearGradient id='g' x1='0%25' y1='50%25' x2='100%25' y2='50%25'%3E%3Cstop offset='0%25' stop-color='%23808080'/%3E%3Cstop offset='50%25' stop-color='%23000000'/%3E%3Cstop offset='100%25' stop-color='%23808080'/%3E%3C/linearGradient%3E%3Crect fill='url(%23g)' width='100' height='100'/%3E%3C/svg%3E" result="displacement" />
-                        <feDisplacementMap ref={displacementRef} in="SourceGraphic" in2="displacement" scale="0" xChannelSelector="R" yChannelSelector="G" />
-                    </filter>
-                </defs>
-            </svg>
             <div className={`w-full h-full flex flex-col md:flex-row relative overflow-visible`}>
                 <div className="w-full h-1/2 md:h-full relative min-w-0 flex-shrink-0 overflow-visible">
                     <div ref={imageContainerRef} className="w-[calc(100%+200px)] -ml-[100px] px-[100px] h-full overflow-y-auto scrollbar-none cursor-grab select-none relative" onScroll={handleScrollUpdate} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'none' }}>
