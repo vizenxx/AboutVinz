@@ -345,13 +345,10 @@ export default function App() {
   // Ripple Effect Canvas
   useEffect(() => {
     const canvas = rippleCanvasRef.current; if (!canvas) return;
-    const ctx = canvas.getContext('2d'); let animationFrameId; let trailId; let lastPos = null;
+    const ctx = canvas.getContext('2d'); let animationFrameId; let lastPos = null;
     const CLICK_CONFIG = { maxRadius: isMobile ? 250 : 500, lifespan: isMobile ? 2400 : 4000 };
-
     const resizeCanvas = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-    window.addEventListener('resize', resizeCanvas);
-    setTimeout(resizeCanvas, 50);
-
+    window.addEventListener('resize', resizeCanvas); setTimeout(resizeCanvas, 50);
     const handleMouseMove = (e) => {
       const x = e.clientX;
       const y = e.clientY;
@@ -376,8 +373,6 @@ export default function App() {
       }
       lastPos = { x, y };
     };
-    window.addEventListener('mousemove', handleMouseMove);
-
     const handlePointerDown = (e) => {
       // Prevent ripple if clicking on the mobile menu (drag or buttons) or dragging images
       if (e.target.closest('#mobile-menu-pill')) return;
@@ -388,10 +383,10 @@ export default function App() {
 
     // Trail Canvas Animation Logic (v16.24 Simplified)
     const trailCanvas = trailCanvasRef.current;
-    const resizeTrail = () => { if (trailCanvas) { trailCanvas.width = window.innerWidth; trailCanvas.height = window.innerHeight; } };
-
     if (trailCanvas) {
       const trailCtx = trailCanvas.getContext('2d');
+      let trailId;
+      const resizeTrail = () => { trailCanvas.width = window.innerWidth; trailCanvas.height = window.innerHeight; };
       window.addEventListener('resize', resizeTrail);
       resizeTrail();
 
@@ -458,6 +453,7 @@ export default function App() {
         trailId = requestAnimationFrame(animateTrail);
       };
       animateTrail();
+      // Cleanup trail listeners is handled in the main useEffect cleanup if needed or separately
     }
 
     const animate = () => {
@@ -469,15 +465,8 @@ export default function App() {
       animationFrameId = requestAnimationFrame(animate);
     };
     animate();
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      window.removeEventListener('resize', resizeTrail);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('pointerdown', handlePointerDown);
-      cancelAnimationFrame(animationFrameId);
-      cancelAnimationFrame(trailId);
-    };
-  }, [colorScheme.compHSL, isLightMode, isMobile]);
+    return () => { window.removeEventListener('resize', resizeCanvas); window.removeEventListener('mousemove', handleMouseMove); window.removeEventListener('pointerdown', handlePointerDown); cancelAnimationFrame(animationFrameId); };
+  }, [colorScheme.compHSL, isLightMode]);
 
   // Global Click handler for color change
   useEffect(() => {
@@ -585,7 +574,6 @@ export default function App() {
             isColorPinned={isColorPinned}
             setIsColorPinned={setIsColorPinned}
             mutedColor={mutedColor}
-            isMobile={isMobile}
           />
         )}
       </div>

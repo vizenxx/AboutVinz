@@ -585,7 +585,6 @@ export default function App() {
             isColorPinned={isColorPinned}
             setIsColorPinned={setIsColorPinned}
             mutedColor={mutedColor}
-            isMobile={isMobile}
           />
         )}
       </div>

@@ -47,10 +47,10 @@ export default function About({ isOpen, onClose, theme, colorScheme, isLightMode
                             />
                         </div>
                         <div className="text-center md:text-left">
-                            <h2 className="font-kumbh font-bold text-2xl uppercase tracking-wide" style={{ color: colorScheme.base }}>
+                            <h2 className="font-primary font-bold text-2xl uppercase tracking-wide" style={{ color: colorScheme.base }}>
                                 Vinz Tan
                             </h2>
-                            <p className={`text-sm uppercase tracking-widest mt-1 ${theme.subText}`}>
+                            <p className={`text-sm uppercase tracking-widest mt-1 font-primary ${theme.subText}`}>
                                 AIGC Strategist
                             </p>
                         </div>
@@ -59,10 +59,10 @@ export default function About({ isOpen, onClose, theme, colorScheme, isLightMode
                     {/* Right: Bio */}
                     <div className="flex flex-col gap-6">
                         <div>
-                            <h3 className={`text-sm uppercase tracking-[0.2em] mb-4 ${theme.subText}`}>
+                            <h3 className={`text-sm uppercase tracking-[0.2em] mb-4 font-primary ${theme.subText}`}>
                                 About
                             </h3>
-                            <div className={`space-y-4 leading-relaxed ${theme.text}`}>
+                            <div className={`space-y-4 leading-relaxed font-content ${theme.text} text-[12px]`}>
                                 <p>
                                     I'm a Malaysian creative technologist specializing in AI-Generated Content (AIGC) strategy and implementation. My work sits at the intersection of design, technology, and emerging AI systems.
                                 </p>
@@ -76,7 +76,7 @@ export default function About({ isOpen, onClose, theme, colorScheme, isLightMode
                         </div>
 
                         <div>
-                            <h3 className={`text-sm uppercase tracking-[0.2em] mb-4 ${theme.subText}`}>
+                            <h3 className={`text-sm uppercase tracking-[0.2em] mb-4 font-primary ${theme.subText}`}>
                                 Expertise
                             </h3>
                             <div className="grid grid-cols-2 gap-3">
@@ -92,7 +92,7 @@ export default function About({ isOpen, onClose, theme, colorScheme, isLightMode
                                 ].map((skill, i) => (
                                     <div
                                         key={i}
-                                        className={`px-3 py-2 rounded-lg border ${theme.border} text-xs uppercase tracking-wider transition-all duration-300 hover:border-current`}
+                                        className={`px-3 py-2 rounded-lg border ${theme.border} text-xs uppercase tracking-wider transition-all duration-300 hover:border-current font-content`}
                                         style={{
                                             borderColor: theme.border,
                                             color: theme.text
@@ -113,10 +113,10 @@ export default function About({ isOpen, onClose, theme, colorScheme, isLightMode
                         </div>
 
                         <div>
-                            <h3 className={`text-sm uppercase tracking-[0.2em] mb-4 ${theme.subText}`}>
+                            <h3 className={`text-sm uppercase tracking-[0.2em] mb-4 font-primary ${theme.subText}`}>
                                 Philosophy
                             </h3>
-                            <blockquote className={`border-l-2 pl-4 italic ${theme.text}`} style={{ borderColor: colorScheme.compString }}>
+                            <blockquote className={`border-l-2 pl-4 italic font-content ${theme.text} text-[12px]`} style={{ borderColor: colorScheme.compString }}>
                                 "AI didn't kill design—it's part of the future design. By understanding both the creative process and the technology, we can build tools that amplify human creativity rather than replace it."
                             </blockquote>
                         </div>

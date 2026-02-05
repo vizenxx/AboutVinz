@@ -1,61 +1,8 @@
-import { Sun, Moon, Menu, X, ArrowUpRight, Linkedin, Mail, GripVertical, Pin as PinIcon, Volume2, VolumeX, Pause, Play, Download } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sun, Moon, Pin as PinIcon, Menu, X, GripVertical, Plus } from 'lucide-react';
+
 import { HackerText } from './TextEffects';
 import Project from '../Project';
-import { useRef, useState, useEffect } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
-
-// Hybrid Marquee Component for Manual + Auto Scroll (v13.90)
-const MarqueeRow = ({ items, reverse = false, theme, isLightMode }) => {
-    const rowRef = useRef(null);
-    const contentRef = useRef(null);
-
-    useEffect(() => {
-        const row = rowRef.current;
-        const content = contentRef.current;
-        if (!row || !content) return;
-
-        // GSAP Parallax via transform (v13.97)
-        // This moves the items independently of the manual scroll container
-        const ctx = gsap.context(() => {
-            gsap.fromTo(content,
-                { x: reverse ? 100 : -100 },
-                {
-                    x: reverse ? -100 : 100,
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: row,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: 1,
-                    }
-                }
-            );
-        }, row);
-
-        return () => ctx.revert();
-    }, [reverse]);
-
-    return (
-        <div ref={rowRef} className="w-full py-1.5 overflow-hidden">
-            <div className="flex overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing select-none px-6">
-                <div
-                    ref={contentRef}
-                    className="flex gap-3 whitespace-nowrap"
-                >
-                    {/* 4 sets is plenty for transform-based parallax */}
-                    {[...items, ...items, ...items, ...items].map((skill, j) => (
-                        <div key={j} className={`px-5 py-2.5 rounded-full border ${theme.border} ${isLightMode ? 'bg-white' : 'bg-black'} text-center uppercase tracking-widest text-[9px] shadow-lg whitespace-nowrap active:scale-95 transition-all`}>
-                            {skill}
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-};
 
 export default function MobileLayout({
     activePage,
@@ -71,8 +18,7 @@ export default function MobileLayout({
     setIsRoleHovered,
     isColorPinned,
     setIsColorPinned,
-    mutedColor,
-    isMobile
+    mutedColor
 }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [bioIndex, setBioIndex] = useState(0);
@@ -82,7 +28,6 @@ export default function MobileLayout({
     const [isBottomDocked, setIsBottomDocked] = useState(false);
     // Scroll End State (v13.20)
     const [isAtBottom, setIsAtBottom] = useState(false);
-    const [isAtTop, setIsAtTop] = useState(true);
 
     // Sync expanded state to global "hover" state to pause timer
     useEffect(() => {
@@ -97,6 +42,11 @@ export default function MobileLayout({
         x: typeof window !== 'undefined' ? window.innerWidth - 39.5 : 300,
         y: 57.5
     }));
+
+
+
+
+
 
 
     // Pin Tooltip State (v12.93)
@@ -238,10 +188,8 @@ export default function MobileLayout({
     // Detect Scroll End (v13.20)
     useEffect(() => {
         const handleScroll = () => {
-            const scrolledToBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
-            const scrolledToTop = window.scrollY < 20; // 20px threshold for "At Top"
+            const scrolledToBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 10;
             setIsAtBottom(scrolledToBottom);
-            setIsAtTop(scrolledToTop);
         };
         window.addEventListener('scroll', handleScroll);
         // Initial check
@@ -316,13 +264,11 @@ export default function MobileLayout({
     const overlayBg = isLightMode ? 'bg-white/95' : 'bg-black/95';
     const overlayText = isLightMode ? 'text-black' : 'text-white';
 
-    // Visibility Logic (v13.82)
-    // Show only at the very top or when project meta appears at bottom
-    const shouldShowFooter = isAtTop || isAtBottom;
-
     return (
         // NATURAL SCROLL CONTAINER (No mask for performance)
         <div className={`relative w-full z-40 ${theme.text}`} onClick={() => setIsRoleExpanded(false)}>
+
+
 
             {/* CONTENT WRAPPER */}
             <div className="w-full flex flex-col">
@@ -391,74 +337,63 @@ export default function MobileLayout({
                         </div>
                     </div>
 
+
+
+
+
+
                 </section>
 
 
 
                 {/* ABOUT */}
-                <section ref={aboutRef} id="about" className="w-full flex flex-col pt-20 relative overflow-hidden">
-                    <div className={`w-full h-[65vh] relative overflow-hidden`}>
+                <section ref={aboutRef} id="about" className="w-full flex flex-col justify-center px-6 py-20 gap-8 relative overflow-hidden">
+
+                    <div className={`w-full aspect-square max-w-sm mx-auto rounded-2xl border ${isLightMode ? 'bg-white/10 border-black/10' : 'bg-black/5 border-white/10'} backdrop-blur-md shadow-lg shadow-black/5 flex items-center justify-center overflow-hidden`}>
                         <img
                             src="/portfolio-site/vinz-portrait.jpg"
                             alt="Vinz Portrait"
-                            className="w-full h-full object-cover transition-all duration-1000"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                        <div className="absolute bottom-12 left-6 right-6">
-                            <h3 className="text-6xl font-black tracking-tighter leading-none text-white drop-shadow-2xl">
-                                Hi, I'm Vinz.
-                            </h3>
-                        </div>
-                    </div>
-
-                    <div className="relative z-10 py-4 flex flex-col gap-2 -mt-10 overflow-hidden">
-                        <MarqueeRow
-                            items={['Creative Ops Strategy', 'Hybrid Workflow Design', 'AIGC Pipeline Arch.']}
-                            theme={theme}
-                            isLightMode={isLightMode}
-                        />
-                        <MarqueeRow
-                            items={['Art Direction', 'Brand Systems', 'Tech-Art Leadership']}
-                            reverse={true}
-                            theme={theme}
-                            isLightMode={isLightMode}
+                            className="w-full h-full object-cover"
                         />
                     </div>
-
-                    <div className={`${theme.text} px-6 pt-6 pb-20 space-y-8 font-content`}>
+                    <div className="flex flex-wrap gap-2 justify-center font-content">
+                        {['Creative Ops Strategy', 'Hybrid Workflow Design', 'AIGC Pipeline Arch.', 'Art Direction', 'Brand Systems', 'Tech-Art Leadership'].map((skill, i) => (
+                            <div key={i} className={`px-3 py-2 rounded border ${theme.border} text-center uppercase tracking-wider text-[10px]`}>{skill}</div>
+                        ))}
+                    </div>
+                    <div className={`${theme.text} p-6 rounded-2xl border ${isLightMode ? 'bg-white/10 border-black/10' : 'bg-black/5 border-white/10'} backdrop-blur-md shadow-lg shadow-black/5 text-[13px] leading-relaxed text-justify space-y-4 font-content`}>
                         <p>I am a Creative Operations Architect who helps Creative Teams escape production limits and maximize their impact.</p>
                         <p>With over 12 years of experience spanning roles from Head of Foundation to 2D Team Lead, I bridge the gap between traditional artistry and modern efficiency.</p>
                         <p>Unlike generalist designers, I specialize in Hybrid Design Systems. I have successfully implemented AI-based rendering workflows that scaled asset production for illustration, visual design, and mobile game projects, proving that AI can amplify output without sacrificing quality. I am here to help your studio build "AI-Resilient" pipelines that empower your artists to use technology for control, not replacement.</p>
 
-                        <div className="mt-8 pt-8 border-t border-white/10">
-                            <h4 className={`text-[10px] uppercase tracking-[0.3em] font-bold ${theme.subText} mb-6 font-primary opacity-60`}>Strategic Focus:</h4>
-                            <div className="grid grid-cols-1 gap-12">
-                                <div className="flex flex-col gap-2">
-                                    <span className="text-lg font-bold font-primary leading-none" style={{ color: colorScheme.base }}>Empowering Artists</span>
-                                    <span className={`${theme.subText} text-[14px] font-content opacity-70 leading-relaxed`}>Training teams to use AI as a tool for control, not a replacement.</span>
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <span className="text-lg font-bold font-primary leading-none" style={{ color: colorScheme.base }}>Protecting Integrity</span>
-                                    <span className={`${theme.subText} text-[14px] font-content opacity-70 leading-relaxed`}>Using AI for the "base," while human taste handles the "finish."</span>
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <span className="text-lg font-bold font-primary leading-none" style={{ color: colorScheme.base }}>Scaling Output</span>
-                                    <span className={`${theme.subText} text-[14px] font-content opacity-70 leading-relaxed`}>Removing bottlenecks so teams can create more without burnout.</span>
-                                </div>
-                            </div>
+                        <div className="mt-4">
+                            <h4 className={`text-xs uppercase tracking-widest font-bold ${theme.subText} mb-3 font-primary`}>My Focus:</h4>
+                            <ul className="space-y-3 list-none pl-0">
+                                <li className="pl-3 border-l-2" style={{ borderColor: mutedColor.replace('1)', '0.25)') }}>
+                                    <span className="font-bold block mb-1 font-primary">Empowering Artists</span>
+                                    <span className={`${theme.subText} text-[13px] font-content`}>Training teams to use AI as a tool for control, not a replacement.</span>
+                                </li>
+                                <li className="pl-3 border-l-2" style={{ borderColor: mutedColor.replace('1)', '0.25)') }}>
+                                    <span className="font-bold block mb-1 font-primary">Protecting Integrity</span>
+                                    <span className={`${theme.subText} text-[13px] font-content`}>Using AI for the "base," while human taste handles the "finish."</span>
+                                </li>
+                                <li className="pl-3 border-l-2" style={{ borderColor: mutedColor.replace('1)', '0.25)') }}>
+                                    <span className="font-bold block mb-1 font-primary">Scaling Output</span>
+                                    <span className={`${theme.subText} text-[13px] font-content`}>Removing bottlenecks so teams can create more without burnout.</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </section>
 
                 {/* WORK */}
-                <section ref={workRef} id="work" className="w-full flex flex-col pt-10 pb-20 gap-8 relative">
+                <section ref={workRef} id="work" className="w-full flex flex-col justify-center px-6 py-20 gap-8 relative overflow-hidden">
 
-                    <div className="w-full h-auto relative">
+                    <div className="w-full h-[80vh] relative">
                         <Project
                             theme={theme}
                             colorScheme={colorScheme}
                             isLightMode={isLightMode}
-                            isMobile={isMobile}
                         />
                     </div>
                 </section>
@@ -509,12 +444,18 @@ export default function MobileLayout({
             />
 
 
+
+
             {/* --- FIXED UI ELEMENTS (Above atmosphere) --- */}
 
             {/* Top UI: Desktop-style Nav - Moves ONLY on overlap */}
             <div className={`fixed z-40 flex flex-col items-start gap-3 ${theme.text} transition-all duration-500 ${isMenuOpen ? 'opacity-0' : 'opacity-100'} 
                 ${overlap.topLeft ? 'top-[30px] right-[24px] items-end text-right' : 'top-[30px] left-[24px] items-start text-left'}`}
                 style={{ pointerEvents: isMenuOpen ? 'none' : 'auto' }}>
+
+
+
+
 
                 {/* Vinz Tan */}
                 <button onClick={() => handlePageChange('about')} className={`flex items-center group h-5 transition-all ${overlap.topLeft ? 'flex-row-reverse' : ''}`}>
@@ -586,13 +527,14 @@ export default function MobileLayout({
                         width: '100%',
                         height: '100%',
                         justifyContent: 'center',
-                        padding: '0 12px'
+                        padding: '0 12px' // Increased end padding
                     }}
 
                 >
                     {/* Directional Logic: Grip always on outer edge */}
                     {menuSide === 'left' ? (
                         <>
+                            {/* LEFT SIDE: (0.75) D (1.25) C (1) B (1) A (0.75) */}
                             <div className={`p-1.5 rounded-full flex-shrink-0 ${isLightMode ? 'text-black' : 'text-white'}`}
                                 onTouchStart={(e) => {
                                     setIsDragging(true);
@@ -611,15 +553,15 @@ export default function MobileLayout({
                                 <GripVertical size={isDragging ? 28 : 18} />
                             </div>
                             <div className={`flex items-center transition-all duration-500 overflow-hidden ${isDragging ? 'w-0 opacity-0' : 'w-fit opacity-100'}`}>
-                                <div className="w-[6px]" />
+                                <div className="w-[6px]" /> {/* spacing 1.25 (approx) */}
                                 <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
                                     {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
                                 </button>
-                                <div className="w-[5px]" />
+                                <div className="w-[5px]" /> {/* spacing 1.0 */}
                                 <button onClick={() => setIsLightMode(!isLightMode)} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
                                     {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
                                 </button>
-                                <div className="w-[5px]" />
+                                <div className="w-[5px]" /> {/* spacing 1.0 */}
                                 <button onClick={handlePinClick} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
                                     <PinIcon size={20} className={isColorPinned ? 'fill-current' : ''} />
                                 </button>
@@ -628,20 +570,21 @@ export default function MobileLayout({
                         </>
                     ) : (
                         <>
+                            {/* RIGHT SIDE: (0.75) A (1) B (1) C (1.25) D (0.75) */}
                             <div className={`flex items-center transition-all duration-500 overflow-hidden ${isDragging ? 'w-0 opacity-0' : 'w-fit opacity-100'}`}>
                                 <button onClick={handlePinClick} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
                                     <PinIcon size={20} className={isColorPinned ? 'fill-current' : ''} />
                                 </button>
 
-                                <div className="w-[5px]" />
+                                <div className="w-[5px]" /> {/* spacing 1.0 */}
                                 <button onClick={() => setIsLightMode(!isLightMode)} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
                                     {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
                                 </button>
-                                <div className="w-[5px]" />
+                                <div className="w-[5px]" /> {/* spacing 1.0 */}
                                 <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
                                     {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
                                 </button>
-                                <div className="w-[6px]" />
+                                <div className="w-[6px]" /> {/* spacing 1.25 (approx) */}
                             </div>
                             <div className={`p-1.5 rounded-full flex-shrink-0 ${isLightMode ? 'text-black' : 'text-white'}`}
                                 onTouchStart={(e) => {
@@ -672,38 +615,60 @@ export default function MobileLayout({
             <div className={`fixed z-40 pointer-events-none transition-opacity duration-500 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>
 
                 {/* Based in Malaysia */}
-                <div className={`fixed transition-all duration-400 ${theme.text} text-[10px] uppercase tracking-widest font-primary flex flex-col justify-center h-[40px]
-                    ${overlap.bottomLeft || overlap.bottomRight ? 'top-[30px] right-[24px] text-right items-end' : 'bottom-[20px] left-[24px] text-left items-start'}
-                    ${shouldShowFooter ? 'translate-x-0 opacity-100' : '-translate-x-[120%] opacity-0'}`}>
+                <div className={`fixed transition-alls duration-700 ${theme.text} text-[10px] uppercase tracking-widest font-primary
+                    ${overlap.bottomLeft || overlap.bottomRight ? 'top-[30px] right-[24px] text-right items-end' : 'bottom-[20px] left-[24px] text-left items-start'}`}>
                     <div className={isLightMode ? 'opacity-70' : 'opacity-50'}>Based in Malaysia</div>
                     <div className={isLightMode ? 'opacity-40' : 'opacity-30'}>© 2026 (v13.79)</div>
                 </div>
 
 
 
-                {/* Scroll Indicator */}
-                <div className={`fixed transition-all duration-400 ${theme.text} text-[10px] uppercase tracking-widest animate-pulse font-primary flex flex-col justify-center h-[40px]
-                    ${overlap.bottomRight ? 'bottom-[20px] left-[24px] text-left items-start' : 'bottom-[20px] right-[24px] text-right items-end'}
-                    ${shouldShowFooter ? 'translate-x-0 opacity-100' : 'translate-x-[120%] opacity-0'}`}>
 
-                    <div className="relative w-[80px] h-[20px]">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {/* Scroll Indicator */}
+                <div className={`fixed transition-all duration-700 ${theme.text} text-[10px] uppercase tracking-widest animate-pulse font-primary
+                    ${overlap.bottomRight ? 'bottom-[20px] left-[24px] text-left' : 'bottom-[20px] right-[24px] text-right'}`}>
+
+                    <div className="relative inline-block w-[60px] h-[12px] align-middle">
                         {/* Scroll Label - Fades out to LEFT */}
-                        <span className={`absolute inset-0 flex items-center ${overlap.bottomRight ? 'justify-start' : 'justify-end'} transition-all duration-500 ease-out whitespace-nowrap 
+                        <span className={`absolute top-0 ${overlap.bottomRight ? 'left-0' : 'right-0'} transition-all duration-500 ease-out whitespace-nowrap 
                             ${isAtBottom ? '-translate-x-4 opacity-0' : `translate-x-0 ${isLightMode ? 'opacity-70' : 'opacity-50'}`}`}>
                             Scroll ↓
                         </span>
-                        {/* End Icons - Fades in from RIGHT */}
-                        <div className={`absolute inset-0 flex items-center ${overlap.bottomRight ? 'justify-start' : 'justify-end'} gap-5 transition-all duration-500 ease-out 
-                            ${isAtBottom ? `translate-x-0 opacity-100` : 'translate-x-4 opacity-0 pointer-events-none'}`}>
-                            <a href="https://www.linkedin.com/in/vinz-tan/" target="_blank" rel="noopener noreferrer" className={`transition-all active:scale-95 ${isLightMode ? 'text-black' : 'text-white'}`} style={{ opacity: isLightMode ? 0.7 : 0.6 }}>
-                                <Linkedin size={20} strokeWidth={1.5} />
-                            </a>
-                            <a href="mailto:vinz.a.studio@gmail.com" className={`transition-all active:scale-95 ${isLightMode ? 'text-black' : 'text-white'}`} style={{ opacity: isLightMode ? 0.7 : 0.6 }}>
-                                <Mail size={20} strokeWidth={1.5} />
-                            </a>
-                        </div>
+                        {/* End Label - Fades in from RIGHT */}
+                        <span className={`absolute top-0 ${overlap.bottomRight ? 'left-0' : 'right-0'} transition-all duration-500 ease-out whitespace-nowrap 
+                            ${isAtBottom ? `translate-x-0 ${isLightMode ? 'opacity-100' : 'opacity-75'}` : 'translate-x-4 opacity-0'}`}>
+                            End.
+                        </span>
                     </div>
                 </div>
+
 
 
             </div>
@@ -720,15 +685,9 @@ export default function MobileLayout({
                             {item.name}
                         </button>
                     ))}
-                    <div className={`mt-8 flex gap-8`}>
-                        <a href="https://www.linkedin.com/in/vinz-tan/" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] font-primary ${isLightMode ? 'text-black/60' : 'text-white/60'} hover:opacity-100`}>
-                            <Linkedin size={18} strokeWidth={1.5} />
-                            <span>LinkedIn</span>
-                        </a>
-                        <a href="mailto:vinz.a.studio@gmail.com" className={`flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] font-primary ${isLightMode ? 'text-black/60' : 'text-white/60'} hover:opacity-100`}>
-                            <Mail size={18} strokeWidth={1.5} />
-                            <span>Email</span>
-                        </a>
+                    <div className={`mt-8 flex gap-8 text-sm ${isLightMode ? 'text-black/60' : 'text-white/60'}`}>
+                        <a href="https://www.linkedin.com/in/vinz-tan/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                        <a href="mailto:vinz.a.studio@gmail.com">Email</a>
                     </div>
                 </div>
             )}
