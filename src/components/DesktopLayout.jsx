@@ -291,6 +291,7 @@ export default function DesktopLayout({
                                             }}
                                         >
                                             <div className="space-y-6 leading-relaxed text-[13px] text-left max-w-[35vw] font-content">
+                                                <h2 className={`text-xl font-bold font-primary mb-2 tracking-tight ${theme.highlight}`}>Hi, I'm Vinz.</h2>
                                                 <p>I am a Creative Operations Architect who helps Creative Teams escape production limits and maximize their impact.</p>
                                                 <p>With over 12 years of experience spanning roles from Head of Foundation to 2D Team Lead, I bridge the gap between traditional artistry and modern efficiency.</p>
                                                 <p>Unlike generalist designers, I specialize in Hybrid Design Systems. I have successfully implemented AI-based rendering workflows that scaled asset production for illustration, visual design, and mobile game projects, proving that AI can amplify output without sacrificing quality. I am here to help your studio build "AI-Resilient" pipelines that empower your artists to use technology for control, not replacement.</p>
