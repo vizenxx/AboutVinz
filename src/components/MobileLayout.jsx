@@ -1,4 +1,4 @@
-import { Sun, Moon, Menu, X, ArrowUpRight, Linkedin, Mail, GripVertical, Pin as PinIcon, Volume2, VolumeX, Pause, Play, Download } from 'lucide-react';
+import { Sun, Moon, Menu, X, ArrowUpRight, Linkedin, Mail, GripVertical, Pin as PinIcon, Volume2, VolumeX, Pause, Play, Download, AudioLines } from 'lucide-react';
 import { HackerText } from './TextEffects';
 import Project from '../Project';
 import { useRef, useState, useEffect, useLayoutEffect } from 'react';
@@ -165,7 +165,9 @@ export default function MobileLayout({
     isColorPinned,
     setIsColorPinned,
     mutedColor,
-    isMobile
+    isMobile,
+    isPlaying,
+    toggleAudio
 }) {
     const comp = useRef(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -494,7 +496,7 @@ export default function MobileLayout({
                     {/* ... content truncated ... */}
                     {/* Hero Text ... */}
                     <div className="flex flex-col justify-center items-end text-right py-12 z-10 h-[60vh]">
-                        <div className="text-[8.5vw] font-bold leading-none tracking-tighter mix-blend-difference font-primary">
+                        <div className="text-[8.5vw] font-normal leading-none tracking-tighter mix-blend-difference font-primary">
                             {bios[bioIndex]}
                         </div>
                     </div>
@@ -540,7 +542,7 @@ export default function MobileLayout({
                                             <div style={isFirst && !isRoleExpanded ? { animation: 'slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards' } : {}}>
                                                 <h2 className="text-sm uppercase tracking-[0.15em] font-medium leading-[1.4] break-words font-primary">
                                                     {role.split(' ').map((word, i) => (
-                                                        <span key={i} className={i === 0 ? 'font-bold block text-base' : `${isLightMode ? 'opacity-50' : 'opacity-40'} block`}>{word}</span>
+                                                        <span key={i} className={i === 0 ? 'font-normal block text-base' : `${isLightMode ? 'opacity-50' : 'opacity-40'} block`}>{word}</span>
                                                     ))}
                                                 </h2>
                                             </div>
@@ -565,7 +567,7 @@ export default function MobileLayout({
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                         <div className="absolute bottom-12 left-6 right-6">
-                            <h3 className="text-6xl font-black tracking-tighter leading-none text-white drop-shadow-2xl">
+                            <h3 className="text-6xl font-normal tracking-tighter leading-none text-white drop-shadow-2xl">
                                 Hi, I'm Vinz.
                             </h3>
                         </div>
@@ -591,10 +593,10 @@ export default function MobileLayout({
                         <p>Unlike generalist designers, I specialize in Hybrid Design Systems. I have successfully implemented AI-based rendering workflows that scaled asset production for illustration, visual design, and mobile game projects, proving that AI can amplify output without sacrificing quality. I am here to help your studio build "AI-Resilient" pipelines that empower your artists to use technology for control, not replacement.</p>
 
                         <div className="mt-8 pt-8 border-t border-white/10">
-                            <h4 className={`text-[10px] uppercase tracking-[0.3em] font-bold ${theme.subText} mb-6 font-primary opacity-60`}>Strategic Focus:</h4>
+                            <h4 className={`text-[10px] uppercase tracking-[0.3em] font-normal ${theme.subText} mb-6 font-primary opacity-60`}>Strategic Focus:</h4>
                             <div className="grid grid-cols-1 gap-12">
                                 <div className="flex flex-col gap-2">
-                                    <span className="text-lg font-bold font-primary leading-none" style={{ color: colorScheme.base }}>Empowering Artists</span>
+                                    <span className="text-lg font-normal font-primary leading-none" style={{ color: colorScheme.base }}>Empowering Artists</span>
                                     <span className={`${theme.subText} text-[15px] font-content opacity-60 leading-relaxed text-justify`}>Training teams to use AI as a tool for control, not a replacement.</span>
                                 </div>
                                 <div className="flex flex-col gap-2">
@@ -750,78 +752,47 @@ export default function MobileLayout({
                     }}
 
                 >
-                    {/* Directional Logic: Grip always on outer edge */}
-                    {menuSide === 'left' ? (
-                        <>
-                            <div className={`p-1.5 rounded-full flex-shrink-0 ${isLightMode ? 'text-black' : 'text-white'}`}
-                                onTouchStart={(e) => {
-                                    setIsDragging(true);
-                                    let currentY = menuCoord.y;
-                                    if (isBottomDocked) {
-                                        const PAD_BOTTOM = 20;
-                                        const hW = 27.5;
-                                        currentY = window.innerHeight - PAD_BOTTOM - hW;
-                                        setMenuCoord(prev => ({ ...prev, y: currentY }));
-                                        setIsBottomDocked(false);
-                                    }
-                                    const touch = e.touches[0];
-                                    dragStartRef.current = { x: touch.clientX, y: touch.clientY, coordX: menuCoord.x, coordY: currentY };
-                                }}>
+                    <div className={menuSide === 'left' ? 'flex flex-row-reverse items-center gap-[5px]' : 'flex flex-row items-center gap-[5px]'}>
+                        {/* 4. Pin */}
+                        <button onClick={handlePinClick} className={`p-1.5 rounded-full transition-all active:scale-90 ${isColorPinned ? 'opacity-100' : 'opacity-50'}`} style={{ color: isColorPinned ? colorScheme.compString : (isLightMode ? '#000' : '#fff') }}>
+                            <PinIcon size={20} className={isColorPinned ? 'fill-current' : ''} />
+                        </button>
 
+                        {/* 3. Theme */}
+                        <button onClick={() => setIsLightMode(!isLightMode)} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
+                            {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
+                        </button>
+
+                        {/* 2. Music */}
+                        <button onClick={() => toggleAudio(undefined, true)} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5' : 'hover:bg-white/10'} ${isPlaying ? 'opacity-100' : 'opacity-40'}`} style={{ color: isPlaying ? colorScheme.compString : (isLightMode ? '#000' : '#fff') }}>
+                            <AudioLines size={20} className={isPlaying ? "animate-pulse" : ""} />
+                        </button>
+
+                        {/* 1. Menu */}
+                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
+                            {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
+                        </button>
+
+                        {/* 0. Drag (Outer edge) */}
+                        <div className={`overflow-hidden transition-all duration-500 ease-in-out flex items-center ${isMenuOpen ? 'w-[36px] opacity-100' : 'w-0 opacity-0'} ${isMenuOpen && menuSide === 'left' ? 'mr-0' : ''} ${isMenuOpen && menuSide === 'right' ? 'ml-0' : ''}`}
+                            onTouchStart={(e) => {
+                                setIsDragging(true);
+                                let currentY = menuCoord.y;
+                                if (isBottomDocked) {
+                                    const PAD_BOTTOM = 20;
+                                    const hW = 27.5;
+                                    currentY = window.innerHeight - PAD_BOTTOM - hW;
+                                    setMenuCoord(prev => ({ ...prev, y: currentY }));
+                                    setIsBottomDocked(false);
+                                }
+                                const touch = e.touches[0];
+                                dragStartRef.current = { x: touch.clientX, y: touch.clientY, coordX: menuCoord.x, coordY: currentY };
+                            }}>
+                            <div className={`p-1.5 rounded-full flex-shrink-0 ${isLightMode ? 'text-black' : 'text-white'}`}>
                                 <GripVertical size={isDragging ? 28 : 18} />
                             </div>
-                            <div className={`flex items-center transition-all duration-500 overflow-hidden ${isDragging ? 'w-0 opacity-0' : 'w-fit opacity-100'}`}>
-                                <div className="w-[6px]" />
-                                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
-                                    {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
-                                </button>
-                                <div className="w-[5px]" />
-                                <button onClick={() => setIsLightMode(!isLightMode)} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
-                                    {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
-                                </button>
-                                <div className="w-[5px]" />
-                                <button onClick={handlePinClick} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
-                                    <PinIcon size={20} className={isColorPinned ? 'fill-current' : ''} />
-                                </button>
-
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className={`flex items-center transition-all duration-500 overflow-hidden ${isDragging ? 'w-0 opacity-0' : 'w-fit opacity-100'}`}>
-                                <button onClick={handlePinClick} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
-                                    <PinIcon size={20} className={isColorPinned ? 'fill-current' : ''} />
-                                </button>
-
-                                <div className="w-[5px]" />
-                                <button onClick={() => setIsLightMode(!isLightMode)} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
-                                    {isLightMode ? <Moon size={20} /> : <Sun size={20} />}
-                                </button>
-                                <div className="w-[5px]" />
-                                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`p-1.5 rounded-full transition-all active:scale-90 ${isLightMode ? 'hover:bg-black/5 text-black' : 'hover:bg-white/10 text-white'}`}>
-                                    {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
-                                </button>
-                                <div className="w-[6px]" />
-                            </div>
-                            <div className={`p-1.5 rounded-full flex-shrink-0 ${isLightMode ? 'text-black' : 'text-white'}`}
-                                onTouchStart={(e) => {
-                                    setIsDragging(true);
-                                    let currentY = menuCoord.y;
-                                    if (isBottomDocked) {
-                                        const PAD_BOTTOM = 20;
-                                        const hW = 27.5;
-                                        currentY = window.innerHeight - PAD_BOTTOM - hW;
-                                        setMenuCoord(prev => ({ ...prev, y: currentY }));
-                                        setIsBottomDocked(false);
-                                    }
-                                    const touch = e.touches[0];
-                                    dragStartRef.current = { x: touch.clientX, y: touch.clientY, coordX: menuCoord.x, coordY: currentY };
-                                }}>
-
-                                <GripVertical size={isDragging ? 28 : 18} />
-                            </div>
-                        </>
-                    )}
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -876,7 +847,7 @@ export default function MobileLayout({
                         { name: 'Vinz Tan', ref: aboutRef },
                         { name: 'Projects', ref: workRef }
                     ].map((item) => (
-                        <button key={item.name} onClick={() => scrollTo(item.ref)} className={`text-4xl font-bold uppercase tracking-widest font-primary ${overlayText} hover:opacity-70`} style={item.name === 'Vinz Tan' ? { color: nameColor } : {}}>
+                        <button key={item.name} onClick={() => scrollTo(item.ref)} className={`text-4xl font-normal uppercase tracking-widest font-primary ${overlayText} hover:opacity-70`} style={item.name === 'Vinz Tan' ? { color: nameColor } : {}}>
                             {item.name}
                         </button>
                     ))}

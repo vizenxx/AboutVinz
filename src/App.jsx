@@ -40,9 +40,148 @@ export default function App() {
 
   const [isLightMode, setIsLightMode] = useState(true);
   const [isColorPinned, setIsColorPinned] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const isAudioInitialized = useRef(false);
+  const userDecidedMute = useRef(false);
   const [activePage, setActivePage] = useState('home');
+
+  // Audio Logic (v13.92 - Refined Auto-start Fallback)
+  useEffect(() => {
+    const audio = new Audio('/portfolio-site/music/BGM.MP3');
+    audio.loop = true;
+    audio.volume = 0;
+    audio.muted = true; // Essential for browser autoplay permission
+    audioRef.current = audio;
+
+    // Attempt immediate play (muted)
+    audio.play().then(() => {
+      console.log("Muted autoplay started successfully.");
+    }).catch(() => {
+      console.log("Muted autoplay blocked.");
+    });
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  const toggleAudio = (forceState, isManual = false) => {
+    if (!audioRef.current) return;
+
+    // 1. If user manually interacts, they take full control forever
+    if (isManual) {
+      userDecidedMute.current = true;
+    }
+
+    // Bass Boost & Context Setup (Only once)
+    if (!audioContextRef.current && !isAudioInitialized.current) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContext();
+      try {
+        const source = ctx.createMediaElementSource(audioRef.current);
+        const bassFilter = ctx.createBiquadFilter();
+        bassFilter.type = 'lowshelf';
+        bassFilter.frequency.value = 150;
+        bassFilter.gain.value = 12;
+        source.connect(bassFilter);
+        bassFilter.connect(ctx.destination);
+        audioContextRef.current = ctx;
+        isAudioInitialized.current = true;
+      } catch (e) {
+        console.log("Audio node already connected.");
+        audioContextRef.current = ctx; // Still track context
+        isAudioInitialized.current = true;
+      }
+    }
+
+    const shouldPlay = typeof forceState === 'boolean' ? forceState : !isPlaying;
+
+    if (!shouldPlay) {
+      // Manual Mute: Kill all tweens and fade volume to zero
+      gsap.killTweensOf(audioRef.current);
+      gsap.to(audioRef.current, {
+        volume: 0, duration: 0.8, onComplete: () => {
+          if (audioRef.current) audioRef.current.pause();
+        }
+      });
+      setIsPlaying(false);
+    } else {
+      if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume();
+      }
+
+      // Unmute and Start Fade-in
+      audioRef.current.muted = false;
+
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          gsap.killTweensOf(audioRef.current);
+          gsap.to(audioRef.current, {
+            volume: 0.4,
+            duration: 2.5,
+            ease: "sine.inOut",
+            onStart: () => setIsPlaying(true)
+          });
+        }).catch(e => {
+          console.log("Auto-start waiting for interaction...");
+          setIsPlaying(false);
+        });
+      }
+    }
+  };
+
+  // One-time Interaction Fallback
+  useEffect(() => {
+    const handleEngagement = () => {
+      // If user hasn't explicitly muted, try to start (Skip auto-start on Mobile)
+      if (!isMobile && !userDecidedMute.current && !isPlaying) {
+        if (audioRef.current) {
+          // MOST AGGRESSIVE MOBILE FIX: Direct play in gesture handler (Only for desktop engagement now)
+          audioRef.current.muted = false;
+          if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+            audioContextRef.current.resume();
+          }
+          audioRef.current.play()
+            .then(() => toggleAudio(true))
+            .catch(e => console.log("Still blocked..."));
+        }
+      }
+
+      // Remove permanently after engagement attempt
+      window.removeEventListener('click', handleEngagement, true);
+      window.removeEventListener('touchstart', handleEngagement, true);
+      window.removeEventListener('mousedown', handleEngagement, true);
+      window.removeEventListener('pointerdown', handleEngagement, true);
+    };
+
+    window.addEventListener('click', handleEngagement, true);
+    window.addEventListener('touchstart', handleEngagement, true);
+    window.addEventListener('mousedown', handleEngagement, true);
+    window.addEventListener('pointerdown', handleEngagement, true);
+
+    const timer = setTimeout(() => {
+      if (!isMobile && !userDecidedMute.current && !isPlaying) {
+        toggleAudio(true);
+      }
+    }, 2000);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('click', handleEngagement, true);
+      window.removeEventListener('touchstart', handleEngagement, true);
+      window.removeEventListener('mousedown', handleEngagement, true);
+      window.removeEventListener('pointerdown', handleEngagement, true);
+    };
+  }, [isPlaying]);
+
   // Debug Version
-  useEffect(() => { console.log('Portfolio Version: v13.79 (Ghost Blur Refinement)'); }, []);
+  useEffect(() => { console.log('Portfolio Version: v13.92 (Refined Auto-start Fallback)'); }, []);
 
   // Initialize Theme & Stateion to check immediately to avoid double-render (Desktop -> Mobile)
   const [isMobile, setIsMobile] = useState(() => {
@@ -573,6 +712,8 @@ export default function App() {
                 isColorPinned={isColorPinned}
                 setIsColorPinned={setIsColorPinned}
                 mutedColor={mutedColor}
+                isPlaying={isPlaying}
+                toggleAudio={toggleAudio}
               />
             )}
           </div>
@@ -597,6 +738,8 @@ export default function App() {
             setIsColorPinned={setIsColorPinned}
             mutedColor={mutedColor}
             isMobile={isMobile}
+            isPlaying={isPlaying}
+            toggleAudio={toggleAudio}
           />
         )}
       </div>

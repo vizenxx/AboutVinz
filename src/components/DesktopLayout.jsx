@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { Sun, Moon, Plus, Pin as PinIcon, Mail, Linkedin } from 'lucide-react';
+import { Sun, Moon, Plus, Pin as PinIcon, Mail, Linkedin, Volume2, VolumeX, AudioLines } from 'lucide-react';
 import gsap from 'gsap';
 import { HackerText } from './TextEffects';
 import Project from '../Project';
@@ -29,7 +29,9 @@ export default function DesktopLayout({
     mutedColor,
     detailPanelRef,
     gccRef,
-    grcRef
+    grcRef,
+    isPlaying,
+    toggleAudio
 }) {
     // --- LOCAL STATE ---
     const comp = useRef(null);
@@ -178,6 +180,10 @@ export default function DesktopLayout({
         <div className="flex items-center gap-2">
             <button onClick={(e) => { e.stopPropagation(); setIsColorPinned(!isColorPinned); }} className={`group relative pl-3 py-3 pr-0 transition-all duration-300 ${isColorPinned ? 'opacity-100 scale-110' : 'opacity-50 hover:opacity-100 hover:scale-110'}`} style={{ color: isColorPinned ? colorScheme.compString : (isLightMode ? '#000' : '#fff') }} aria-label="Pin Color"><PinIcon size={22} strokeWidth={2.1} className={`transition-transform duration-300 ${isColorPinned ? "fill-current" : "group-hover:-rotate-12 group-hover:scale-110"}`} /><span className={`absolute top-1/2 right-full mr-2 -translate-y-1/2 px-2 py-1 text-[10px] uppercase tracking-wider rounded bg-black/50 text-white backdrop-blur-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}>Pin the Color</span></button>
             <button onClick={(e) => { e.stopPropagation(); setIsLightMode(!isLightMode); }} onMouseEnter={() => setHoveredEl('theme')} onMouseLeave={() => setHoveredEl(null)} className={`pl-3 py-3 pr-0 transition-all duration-300 opacity-50 hover:opacity-100 hover:scale-110 translate-x-[2px]`} style={{ color: isLightMode ? '#000' : '#fff' }} aria-label="Toggle Theme">{isLightMode ? <Moon size={24} className={hoveredEl === 'theme' ? 'animate-moon-swing' : ''} /> : <Sun size={24} className={hoveredEl === 'theme' ? 'animate-sun-spin' : ''} />}</button>
+            <button onClick={(e) => { e.stopPropagation(); toggleAudio(undefined, true); }} className={`group relative pl-3 py-3 pr-0 transition-all duration-300 ${isPlaying ? 'opacity-100' : 'opacity-40 hover:opacity-100 hover:scale-110'}`} style={{ color: isPlaying ? colorScheme.compString : (isLightMode ? '#000' : '#fff') }} aria-label="Toggle Audio">
+                <AudioLines size={22} strokeWidth={2.1} className={isPlaying ? "animate-pulse" : ""} />
+                <span className={`absolute top-1/2 right-full mr-2 -translate-y-1/2 px-2 py-1 text-[10px] uppercase tracking-wider rounded bg-black/50 text-white backdrop-blur-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`}>{isPlaying ? 'Mute' : 'Play Music'}</span>
+            </button>
         </div>
     );
 
@@ -204,7 +210,7 @@ export default function DesktopLayout({
                             <a
                                 href="#"
                                 onClick={(e) => { e.preventDefault(); handlePageChange('about'); setClickedItem('Vinz Tan'); setTimeout(() => setClickedItem(null), 300); }}
-                                className={`group relative tracking-[0.2em] uppercase font-primary transition-all duration-300 flex items-center gap-0 ${activePage === 'work' ? 'text-base opacity-40 font-medium' : 'text-lg font-black'}`}
+                                className={`group relative tracking-[0.2em] uppercase font-primary transition-all duration-300 flex items-center gap-0 ${activePage === 'work' ? 'text-base opacity-40 font-medium' : 'text-lg font-normal'}`}
                                 onMouseEnter={() => setHoveredNav('Vinz Tan')}
                                 onMouseLeave={() => setHoveredNav(null)}
                                 style={{ color: clickedItem === 'Vinz Tan' ? (isLightMode ? '#ffffff' : '#000000') : (activePage === 'about' || activePage === 'home') ? colorScheme.base : 'inherit' }}
@@ -220,7 +226,7 @@ export default function DesktopLayout({
                         <div className="flex flex-col items-start gap-4">
                             <button
                                 onClick={() => handlePageChange('work')}
-                                className={`tracking-[0.2em] relative uppercase transition-all duration-300 font-primary text-left ${activePage === 'work' ? 'text-lg font-black opacity-100' : 'text-base opacity-40 font-medium hover:opacity-100 cursor-pointer'}`}
+                                className={`tracking-[0.2em] relative uppercase transition-all duration-300 font-primary text-left ${activePage === 'work' ? 'text-lg font-normal opacity-100' : 'text-base opacity-40 font-medium hover:opacity-100 cursor-pointer'}`}
                             >
                                 <span className="absolute inset-x-0 inset-y-[-2px] entry-highlight-mask" style={{ backgroundColor: colorScheme.compString, transformOrigin: 'left center', zIndex: 10, opacity: 1 }} />
                                 <span className="relative" style={{ zIndex: 1 }}>Projects</span>
@@ -232,7 +238,7 @@ export default function DesktopLayout({
                                     <a
                                         href="#"
                                         onClick={(e) => { e.preventDefault(); handlePageChange('work'); setClickedItem('LuckBros'); setTimeout(() => setClickedItem(null), 300); }}
-                                        className={`group relative text-base tracking-[0.2em] font-primary transition-all duration-300 flex items-center gap-0 font-bold`}
+                                        className={`group relative text-base tracking-[0.2em] font-primary transition-all duration-300 flex items-center gap-0 font-normal`}
                                         onMouseEnter={() => setHoveredNav('LuckBros')}
                                         onMouseLeave={() => setHoveredNav(null)}
                                         style={{ color: clickedItem === 'LuckBros' ? (isLightMode ? '#ffffff' : '#000000') : colorScheme.base }}
@@ -260,7 +266,7 @@ export default function DesktopLayout({
                                             {!isFirst && (<div className={`py-1 text-left transition-all duration-500 ${isRoleHovered ? 'opacity-100' : 'opacity-0'}`}><span className={`text-[0.8em] ${theme.subText}`} style={{ animation: `intermittent-spin ${3 + (roleIndex * 7 % 4)}s ease-in-out infinite`, animationDelay: `${(roleIndex * 3) % 2}s`, transformOrigin: 'center center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '1em', height: '1em' }}><Plus size={12} strokeWidth={3} /></span></div>)}
                                             <div style={isFirst && !isRoleHovered ? { animation: 'slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards' } : {}}>
                                                 {role.split(' ').map((word, i) => (
-                                                    <div key={i} className={i === 0 ? "font-bold" : "font-light"}>{word}</div>
+                                                    <div key={i} className={i === 0 ? "font-normal" : "font-light"}>{word}</div>
                                                 ))}
                                             </div>
                                         </div>
@@ -352,12 +358,12 @@ export default function DesktopLayout({
                                             }}
                                         >
                                             <div className="space-y-6 leading-relaxed text-[13px] text-left max-w-[35vw] font-content">
-                                                <h2 className={`text-xl font-bold font-primary mb-2 tracking-tight ${theme.highlight}`}>Hi, I'm Vinz.</h2>
+                                                <h2 className={`text-xl font-normal font-primary mb-2 tracking-tight ${theme.highlight}`}>Hi, I'm Vinz.</h2>
                                                 <p>I am a Creative Operations Architect who helps Creative Teams escape production limits and maximize their impact.</p>
                                                 <p>With over 12 years of experience spanning roles from Head of Foundation to 2D Team Lead, I bridge the gap between traditional artistry and modern efficiency.</p>
                                                 <p>Unlike generalist designers, I specialize in Hybrid Design Systems. I have successfully implemented AI-based rendering workflows that scaled asset production for illustration, visual design, and mobile game projects, proving that AI can amplify output without sacrificing quality. I am here to help your studio build "AI-Resilient" pipelines that empower your artists to use technology for control, not replacement.</p>
                                                 <div className="mt-6">
-                                                    <h4 className={`text-xs uppercase tracking-widest font-bold ${theme.subText} mb-4 font-primary`}>My Focus:</h4>
+                                                    <h4 className={`text-xs uppercase tracking-widest font-normal ${theme.subText} mb-4 font-primary`}>My Focus:</h4>
                                                     <ul className="space-y-4 list-none pl-0">
                                                         {[
                                                             { t: 'Empowering Artists', d: 'Training teams to use AI as a tool for control, not a replacement.' },
@@ -365,7 +371,7 @@ export default function DesktopLayout({
                                                             { t: 'Scaling Output', d: 'Removing bottlenecks so teams can create more without burnout.' }
                                                         ].map((item, i) => (
                                                             <li key={i} className="pl-4 border-l-2" style={{ borderColor: mutedColor.replace('1)', '0.25)') }}>
-                                                                <span className="font-bold block mb-1 font-primary">{item.t}</span>
+                                                                <span className="font-normal block mb-1 font-primary">{item.t}</span>
                                                                 <span className={`${theme.subText} text-[13px] font-content`}>{item.d}</span>
                                                             </li>
                                                         ))}
@@ -410,7 +416,7 @@ export default function DesktopLayout({
             >
                 <div className={`w-full h-full max-h-full min-h-0 relative py-0 overflow-visible flex flex-col justify-${activePage === 'home' ? 'end' : 'center'}`}>
                     {activePage === 'home' && (
-                        <div className={`text-[min(5.5vw,12vh)] leading-none font-primary font-bold tracking-tighter mix-blend-difference flex flex-col gap-[1vh] items-end text-right select-none cursor-default`}>
+                        <div className={`text-[min(5.5vw,12vh)] leading-none font-primary font-normal tracking-tighter mix-blend-difference flex flex-col gap-[1vh] items-end text-right select-none cursor-default`}>
                             {bios[bioIndex]}
                         </div>
                     )}

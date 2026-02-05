@@ -622,7 +622,7 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
                             onClick={() => setSelectedProjectId(proj.id)}
                             className={`flex flex-col gap-1 transition-all duration-500 whitespace-nowrap`}
                         >
-                            <span className={`text-[10px] uppercase tracking-[0.3em] font-bold ${activeProject.id === proj.id ? theme.text : 'opacity-20'}`}>
+                            <span className={`text-[10px] uppercase tracking-[0.3em] font-normal ${activeProject.id === proj.id ? theme.text : 'opacity-20'}`}>
                                 {proj.title}
                             </span>
                             <div className={`h-[2px] transition-all duration-500 ${activeProject.id === proj.id ? 'w-full' : 'w-0'}`} style={{ backgroundColor: colorScheme.base }} />
@@ -649,19 +649,19 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
 
                             <div className="flex flex-col gap-9 relative z-10">
                                 <div className="space-y-4">
-                                    <h2 className="text-4xl font-light uppercase tracking-[0.2em] leading-[1.1] pr-4" style={{ color: colorScheme.base }}>
+                                    <h2 className="text-4xl font-normal uppercase tracking-[0.2em] leading-[1.1] pr-4" style={{ color: colorScheme.base }}>
                                         <HackerText text={activeProject.title} />
                                     </h2>
                                     <div className="flex items-center gap-3">
                                         <div className="h-[2px] w-6 opacity-30" style={{ backgroundColor: colorScheme.base }} />
-                                        <p className={`text-[9px] uppercase tracking-[0.35em] font-bold ${theme.subText} opacity-50`}>{activeProject.subtitle}</p>
+                                        <p className={`text-[9px] uppercase tracking-[0.35em] font-normal ${theme.subText} opacity-50`}>{activeProject.subtitle}</p>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-x-6 gap-y-7 border-t border-white/5 pt-8">
                                     {activeProject.meta.map((m, i) => (
                                         <div key={i} className={`flex flex-col gap-2 ${m.label === 'Cooperator' ? 'col-span-2' : ''}`}>
-                                            <span className={`text-[8px] uppercase tracking-[0.2em] font-bold ${theme.subText} opacity-30`}>{m.label}</span>
+                                            <span className={`text-[8px] uppercase tracking-[0.2em] font-normal ${theme.subText} opacity-30`}>{m.label}</span>
                                             {m.label === "Cooperator" ? (
                                                 <a href="https://risingformula.com/work" target="_blank" rel="noopener noreferrer" className={`text-[10px] font-content uppercase tracking-[0.05em] ${theme.text} underline underline-offset-[4px] decoration-current hover:decoration-current/60 transition-all font-medium break-words pr-2 block`}>
                                                     {m.value}
@@ -713,7 +713,7 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
                                     <div className="px-6 flex flex-col gap-6">
                                         <div className="flex flex-col gap-3">
                                             <div className="h-[2px] w-12" style={{ backgroundColor: colorScheme.base }} />
-                                            <h3 className="text-xl font-bold uppercase tracking-widest leading-tight font-primary" style={{ color: theme.text }}>{pivotItem.pivot}</h3>
+                                            <h3 className="text-xl font-normal uppercase tracking-widest leading-tight font-primary" style={{ color: theme.text }}>{pivotItem.pivot}</h3>
                                         </div>
                                         <div className={`space-y-6 text-[15px] leading-relaxed font-content ${theme.subText} text-justify opacity-60`}>
                                             {pivotItem.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
@@ -775,7 +775,7 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
                 >
                     <div ref={narrativeRef} className="w-full flex-1 min-h-0 overflow-y-auto scrollbar-none pb-2 select-none" onScroll={handleNarrativeScroll} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'none' }}>
                         <div className={`w-full ${theme.text} font-light font-content mb-4`} style={{ textAlign: 'left', display: 'block' }}>
-                            <h2 className="text-xl font-light uppercase tracking-[0.15em] mb-2" style={{ color: colorScheme.base }}>{activeProject.title}</h2>
+                            <h2 className="text-xl font-normal uppercase tracking-[0.15em] mb-2" style={{ color: colorScheme.base }}>{activeProject.title}</h2>
                             <p className="text-[10px] uppercase tracking-[0.2em] opacity-40 mb-6">{activeProject.subtitle}</p>
                             {activeProject.description.map((block, idx) => {
                                 if (block.type === 'pivot-group') {
@@ -785,7 +785,7 @@ export default function Project({ theme, colorScheme, isLightMode, placement, is
                                                 const isActive = activeImageId === item.targetId;
                                                 return (
                                                     <div key={i} className="mb-4">
-                                                        <button onClick={() => scrollToImage(item.targetId)} className={`block text-left font-bold font-primary transition-all duration-500 uppercase tracking-widest mb-2 ${isActive ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`} style={{ color: isActive ? colorScheme.base : 'inherit', fontSize: isActive ? '12px' : '10px' }}>{item.pivot}</button>
+                                                        <button onClick={() => scrollToImage(item.targetId)} className={`block text-left font-normal font-primary transition-all duration-500 uppercase tracking-widest mb-2 ${isActive ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`} style={{ color: isActive ? colorScheme.base : 'inherit', fontSize: isActive ? '12px' : '10px' }}>{item.pivot}</button>
                                                         <div className={`overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${isActive ? 'max-h-[1000px] opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
                                                             <div className="text-[12px] leading-relaxed text-left opacity-80 space-y-4">{item.paragraphs.map((para, pi) => <p key={pi}>{para}</p>)}</div>
                                                         </div>
