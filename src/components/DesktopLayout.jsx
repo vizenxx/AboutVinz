@@ -64,19 +64,30 @@ export default function DesktopLayout({
             const tl = gsap.timeline({ defaults: { ease: "power3.out", duration: 1.0 } });
 
             // 1. Initial States (Hidden/Offset)
-            gsap.set(".hl-container", { opacity: 0, filter: "brightness(2)" });
+            gsap.set(".hl-container", { opacity: 0 });
+            gsap.set(".entry-highlight-mask", { scaleX: 0 }); // The highlight strike
             gsap.set(".hero-line", { opacity: 0 }); // Slogan
             gsap.set(".cl-container", { opacity: 0, y: 30 }); // Role
             gsap.set(".fl-container", { opacity: 0, x: -40 }); // Based (Left)
             gsap.set(".corner-ui", { opacity: 0, x: 40 }); // Icons (Right)
-            gsap.set(".scroll-indicator", { opacity: 0, filter: "blur(12px)", scale: 0.9 });
+            gsap.set(".scroll-indicator", { opacity: 0, filter: "blur(12px)", scale: 0.95 });
 
             // 2. Orchestrated Sequence
-            // - 0s: Name and Projects (Highlight Entry)
-            tl.to(".hl-container", {
-                opacity: 1, filter: "brightness(1)",
-                duration: 1.2
+            // - 0s: Highlight Strike Starts
+            tl.to(".entry-highlight-mask", {
+                scaleX: 1,
+                duration: 0.5,
+                ease: "expo.inOut",
+                stagger: 0.1
             }, 0)
+                // - 0.5s: Nav text appears as strike begins to clear
+                .to(".hl-container", { opacity: 1, duration: 0.1 }, 0.5)
+                .to(".entry-highlight-mask", {
+                    scaleX: 0,
+                    duration: 0.4,
+                    ease: "power2.inOut",
+                    transformOrigin: "right center"
+                }, 0.5)
 
                 // - 0.3s: Slogan (HackerText entry)
                 .to(".hero-line", {
@@ -95,15 +106,15 @@ export default function DesktopLayout({
                 .to(".fl-container", { opacity: 1, x: 0, duration: 1.2 }, 0.5)
                 .to(".corner-ui", { opacity: 1, x: 0, duration: 1.2 }, "<")
 
-                // SET 2: After Set 1 is mostly complete
-                // - After 1: Scroll for more (Remain blur in)
+                // SET 2: 
+                // - 0.65s: Scroll for more (Remain blur in)
                 .to(".scroll-indicator", {
-                    opacity: 0.6, // Pulse will handle the final view, keep it soft
+                    opacity: 0.6,
                     filter: "blur(0px)",
                     scale: 1,
-                    duration: 2.5,
+                    duration: 1.5,
                     ease: "sine.inOut"
-                }, "+=0.2");
+                }, 0.65);
 
         }, comp);
         return () => ctx.revert();
@@ -199,8 +210,9 @@ export default function DesktopLayout({
                                 style={{ color: clickedItem === 'Vinz Tan' ? (isLightMode ? '#ffffff' : '#000000') : (activePage === 'about' || activePage === 'home') ? colorScheme.base : 'inherit' }}
                             >
                                 <span className="absolute inset-0 transition-all duration-300" style={{ backgroundColor: colorScheme.compString, opacity: clickedItem === 'Vinz Tan' ? 1 : 0, transformOrigin: 'left center', transform: clickedItem === 'Vinz Tan' ? 'scaleX(1)' : 'scaleX(0)', transitionProperty: 'opacity, transform', transitionTimingFunction: 'ease-out', zIndex: 10 }} />
+                                <span className="absolute inset-0 entry-highlight-mask" style={{ backgroundColor: colorScheme.compString, transformOrigin: 'left center', zIndex: 10, opacity: 1 }} />
                                 <span className="transition-all ease-out" style={{ width: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) && clickedItem !== 'Vinz Tan' ? '0.5cqw' : '0px', height: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) && clickedItem !== 'Vinz Tan' ? '1em' : '1px', backgroundColor: colorScheme.compString, marginRight: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) && clickedItem !== 'Vinz Tan' ? '8px' : '0px', opacity: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) && clickedItem !== 'Vinz Tan' ? 1 : 0, transitionProperty: 'width, height, margin-right, opacity', transitionDuration: '300ms, 200ms, 300ms, 300ms', transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)', zIndex: -1 }} />
-                                <span className="relative" style={{ zIndex: 5 }}>Vinz Tan</span>
+                                <span className="relative" style={{ zIndex: 1 }}>Vinz Tan</span>
                             </a>
                         </div>
 
@@ -208,9 +220,10 @@ export default function DesktopLayout({
                         <div className="flex flex-col items-start gap-4">
                             <button
                                 onClick={() => handlePageChange('work')}
-                                className={`tracking-[0.2em] uppercase transition-all duration-300 font-primary text-left ${activePage === 'work' ? 'text-lg font-black opacity-100' : 'text-base opacity-40 font-medium hover:opacity-100 cursor-pointer'}`}
+                                className={`tracking-[0.2em] relative uppercase transition-all duration-300 font-primary text-left ${activePage === 'work' ? 'text-lg font-black opacity-100' : 'text-base opacity-40 font-medium hover:opacity-100 cursor-pointer'}`}
                             >
-                                Projects
+                                <span className="absolute inset-x-0 inset-y-[-2px] entry-highlight-mask" style={{ backgroundColor: colorScheme.compString, transformOrigin: 'left center', zIndex: 10, opacity: 1 }} />
+                                <span className="relative" style={{ zIndex: 1 }}>Projects</span>
                             </button>
 
                             {/* Sub-item: LuckBros (Only when activePage is 'work') */}

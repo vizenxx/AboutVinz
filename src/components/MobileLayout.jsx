@@ -177,38 +177,54 @@ export default function MobileLayout({
         const ctx = gsap.context(() => {
             const tl = gsap.timeline({ defaults: { ease: "power3.out", duration: 1.0 } });
 
-            // 1. Initial State
-            gsap.set(".mobile-hero-line", { opacity: 0 });
-            gsap.set(".mobile-role-box", { opacity: 0, y: 30 });
-            gsap.set(".mobile-footer-item", { opacity: 0, x: (i) => i % 2 === 0 ? -40 : 40 });
-            gsap.set("#mobile-menu-pill", { opacity: 0, scale: 0.8 });
+            // 1. Initial States (Hidden/Offset)
+            gsap.set(".hl-container", { opacity: 0 });
+            gsap.set(".entry-highlight-mask", { scaleX: 0 }); // The highlight strike
+            gsap.set(".mobile-hero-line", { opacity: 0 }); // Slogan
+            gsap.set(".mobile-role-box", { opacity: 0, y: 30 }); // Role
+            gsap.set(".mobile-footer-item-left", { opacity: 0, x: -40 }); // Based (Left)
+            gsap.set(".mobile-footer-item-right", { opacity: 0, x: 40 }); // Icons (Right)
+            gsap.set("#mobile-menu-pill", { opacity: 0, x: 100, scale: 0.8 }); // Menu Pill (Slide from Right)
+            gsap.set(".mobile-scroll-indicator", { opacity: 0, filter: "blur(12px)", scale: 0.95 });
 
-            // 2. Orchestration Sequence
-            // - 0s: Name/Projects (Immediate highlight via Atmosphere/Persistent)
-
-            // - 0.3s: Slogan (Action: Hero Lines)
-            tl.to(".mobile-hero-line", {
-                opacity: 1,
-                duration: 1.2,
-                stagger: 0.12
-            }, 0.3)
-
-                // - 0.5s: Role & Menu Pill
-                .to(".mobile-role-box", {
-                    opacity: 1, y: 0,
-                    duration: 1.2
+            // 2. Orchestrated Sequence
+            // - 0s: Highlight Starts
+            tl.to(".entry-highlight-mask", {
+                scaleX: 1,
+                duration: 0.5,
+                ease: "expo.inOut",
+                stagger: 0.1
+            }, 0)
+                // - 0.5s: Nav appears as highlight clears
+                .to(".hl-container", { opacity: 1, duration: 0.1 }, 0.5)
+                .to(".entry-highlight-mask", {
+                    scaleX: 0,
+                    duration: 0.4,
+                    ease: "power2.inOut",
+                    transformOrigin: "right center"
                 }, 0.5)
-                .to("#mobile-menu-pill", {
-                    opacity: 1, scale: 1,
-                    duration: 1.2
-                }, 0.5)
 
-                // - 0.5s: Icons and Based (X-axis slide)
-                .to(".mobile-footer-item", {
-                    opacity: 1, x: 0,
-                    duration: 1.2,
+                // - 0.3s: Slogan (HackerText entry)
+                .to(".mobile-hero-line", {
+                    opacity: 1,
+                    duration: 0.8,
                     stagger: 0.1
-                }, 0.5);
+                }, 0.3)
+
+                // - 0.5s: Role & Outside elements
+                .to(".mobile-role-box", { opacity: 1, y: 0, duration: 1.2 }, 0.5)
+                .to(".mobile-footer-item-left", { opacity: 1, x: 0, duration: 1.2 }, 0.5)
+                .to(".mobile-footer-item-right", { opacity: 1, x: 0, duration: 1.2 }, "<")
+                .to("#mobile-menu-pill", { opacity: 1, x: 0, scale: 1, duration: 1.2 }, "<")
+
+                // - 0.65s: Scroll for more
+                .to(".mobile-scroll-indicator", {
+                    opacity: 1,
+                    filter: "blur(0px)",
+                    scale: 1,
+                    duration: 1.5,
+                    ease: "sine.inOut"
+                }, 0.65);
 
         }, comp);
         return () => ctx.revert();
@@ -660,33 +676,33 @@ export default function MobileLayout({
                 ${overlap.topLeft ? 'top-[30px] right-[24px] items-end text-right' : 'top-[30px] left-[24px] items-start text-left'}`}
                 style={{ pointerEvents: isMenuOpen ? 'none' : 'auto' }}>
 
-                {/* Vinz Tan */}
-                <button onClick={() => handleNavClick('about')} className={`flex items-center group h-5 transition-all ${overlap.topLeft ? 'flex-row-reverse' : ''}`}>
+                <button onClick={() => handleNavClick('about')} className={`flex items-center group h-5 transition-all relative ${overlap.topLeft ? 'flex-row-reverse' : ''}`}>
+                    <span className="absolute inset-x-[-4px] inset-y-[-2px] entry-highlight-mask" style={{ backgroundColor: colorScheme.compString, transformOrigin: 'left center', zIndex: 10, opacity: 1 }} />
                     <span className={`transition-all duration-300 ${overlap.topLeft ? 'ml-3' : 'mr-3'}`} style={{
                         width: activePage === 'about' ? '4px' : '0px',
                         height: '100%',
                         backgroundColor: colorScheme.compString,
                         opacity: activePage === 'about' ? 1 : 0
                     }} />
-                    <span className={`text-lg font-black tracking-[0.2em] uppercase transition-all duration-300 font-primary ${activePage === 'work' ? 'opacity-80' : 'opacity-100'}`}
-                        style={{ color: activePage === 'work' ? 'inherit' : nameColor }}>
+                    <span className={`text-lg font-black tracking-[0.2em] relative uppercase transition-all duration-300 font-primary hl-container ${activePage === 'work' ? 'opacity-80 font-medium' : 'opacity-100'}`}
+                        style={{ color: activePage === 'work' ? 'inherit' : nameColor, zIndex: 1 }}>
                         Vinz Tan
                     </span>
-
                 </button>
 
 
-                {/* Projects */}
-                <button onClick={() => handleNavClick('work')} className={`flex items-center group h-5 transition-all ${overlap.topLeft ? 'flex-row-reverse' : ''}`}>
+                <button onClick={() => handleNavClick('work')} className={`flex items-center group h-5 transition-all relative ${overlap.topLeft ? 'flex-row-reverse' : ''}`}>
+                    <span className="absolute inset-x-[-4px] inset-y-[-2px] entry-highlight-mask" style={{ backgroundColor: colorScheme.compString, transformOrigin: 'left center', zIndex: 10, opacity: 1 }} />
                     <span className={`transition-all duration-300 ${overlap.topLeft ? 'ml-3' : 'mr-3'}`} style={{
                         width: activePage === 'work' ? '4px' : '0px',
                         height: '100%',
                         backgroundColor: colorScheme.compString,
                         opacity: activePage === 'work' ? 1 : 0
                     }} />
-                    <span className={`text-base font-bold tracking-[0.2em] uppercase transition-all duration-300 font-primary ${activePage === 'work' ? 'opacity-100' : 'opacity-60'}`}
+                    <span className={`text-base font-bold tracking-[0.2em] relative uppercase transition-all duration-300 font-primary hl-container ${activePage === 'work' ? 'opacity-100' : 'opacity-60'}`}
                         style={{
-                            color: activePage === 'work' ? colorScheme.base : 'inherit'
+                            color: activePage === 'work' ? colorScheme.base : 'inherit',
+                            zIndex: 1
                         }}>
                         Projects
                     </span>
@@ -816,7 +832,7 @@ export default function MobileLayout({
             <div className={`fixed z-40 pointer-events-none transition-opacity duration-500 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`}>
 
                 {/* Based in Malaysia */}
-                <div className={`fixed transition-all duration-400 ${theme.text} text-[10px] uppercase tracking-widest font-primary flex flex-col justify-center h-[40px] mobile-footer-item
+                <div className={`fixed transition-all duration-400 ${theme.text} text-[10px] uppercase tracking-widest font-primary flex flex-col justify-center h-[40px] mobile-footer-item-left
                     ${overlap.bottomLeft || overlap.bottomRight ? 'top-[30px] right-[24px] text-right items-end' : 'bottom-[20px] left-[24px] text-left items-start'}
                     ${shouldShowFooter ? 'translate-x-0 opacity-100' : '-translate-x-[120%] opacity-0'}`}>
                     <div className={isLightMode ? 'opacity-70' : 'opacity-50'}>Based in Malaysia</div>
@@ -826,7 +842,7 @@ export default function MobileLayout({
 
 
                 {/* Scroll Indicator */}
-                <div className={`fixed transition-all duration-400 ${theme.text} text-[10px] uppercase tracking-widest animate-pulse font-primary flex flex-col justify-center h-[40px] mobile-footer-item
+                <div className={`fixed transition-all duration-400 ${theme.text} text-[10px] uppercase tracking-widest animate-pulse font-primary flex flex-col justify-center h-[40px] mobile-footer-item-right mobile-scroll-indicator
                     ${overlap.bottomRight ? 'bottom-[20px] left-[24px] text-left items-start' : 'bottom-[20px] right-[24px] text-right items-end'}
                     ${shouldShowFooter ? 'translate-x-0 opacity-100' : 'translate-x-[120%] opacity-0'}`}>
 
