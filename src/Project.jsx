@@ -7,6 +7,9 @@ import { HackerText } from './components/TextEffects';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ==========================================
+// SECTION 1: PROJECT DATA
+// ==========================================
 const projects = [
     {
         id: "luckbros",
@@ -93,6 +96,9 @@ const projects = [
     }
 ];
 
+// ==========================================
+// SECTION 2: LIGHTBOX COMPONENTS (Zoom/Drag)
+// ==========================================
 // LIGHTBOX COMPONENT
 // DESKTOP LIGHTBOX (Zoom, Drag, Wheel)
 const DesktopLightbox = ({ src, onClose }) => {
@@ -376,6 +382,9 @@ const ProjectSwitcher = ({ projects, activeId, onSwitch, theme, colorScheme, isL
     );
 };
 
+// ==========================================
+// SECTION 3: MAIN PROJECT COMPONENT 
+// ==========================================
 export default function Project({
     theme,
     colorScheme,
@@ -385,6 +394,9 @@ export default function Project({
     disablePhysics = false,
     selectedProjectId: selectedProjectIdProp
 }) {
+    // ==========================================
+    // SECTION 3.1: STATE & REFS
+    // ==========================================
     const [selectedProjectId, setSelectedProjectId] = useState(selectedProjectIdProp || projects[0].id);
     const [zoomImage, setZoomImage] = useState(null);
 
@@ -517,6 +529,9 @@ export default function Project({
         let rafId;
 
         const handleWheel = (e) => {
+            // ==========================================
+            // SECTION 4: IMAGE PHYSICS SCROLLER (Desktop)
+            // ==========================================
             e.preventDefault();
             e.stopPropagation();
             scrollPhysics.current.targetY += e.deltaY * 1.25;
@@ -596,9 +611,12 @@ export default function Project({
         };
 
         const updatePhysics = () => {
+            if (!container) return;
             const wrappers = container.querySelectorAll('.project-image-wrapper');
             const p = scrollPhysics.current;
+
             const maxScroll = container.scrollHeight - container.clientHeight;
+
             if (maxScroll <= 0) {
                 p.currentY = 0; p.targetY = 0; p.momentum = 0;
                 container.scrollTop = 0;
@@ -630,6 +648,7 @@ export default function Project({
             } else { p.currentY += (p.targetY - p.currentY) * 0.19; }
 
             container.scrollTop = p.currentY;
+
             const progress = p.currentY / maxScroll;
             setImageProgressInternal(progress);
             if (onImageScroll) onImageScroll(progress);
@@ -736,6 +755,9 @@ export default function Project({
         let rafId;
 
         const handleWheel = (e) => {
+            // ==========================================
+            // SECTION 4.1: NARRATIVE PHYSICS SCROLLER (Desktop)
+            // ==========================================
             e.preventDefault();
             e.stopPropagation();
             const delta = e.deltaY;
@@ -895,22 +917,26 @@ export default function Project({
         };
     }, [isMobile, portalTarget, disablePhysics]);
 
+    // ==========================================
+    // SECTION 5: RENDER (MOBILE VIEW)
+    // ==========================================
     if (isMobile) {
         return (
             <div className="w-full flex flex-col font-primary">
-                {/* Minimal Title Selector */}
-                <div className="px-6 mb-8 flex flex-nowrap gap-8 overflow-x-auto scrollbar-none items-end min-h-[40px]">
-                    {/* Removed Project Nav Text */}
-                </div>
+                {!isMobile && (
+                    <div className="px-6 mb-8 flex flex-nowrap gap-8 overflow-x-auto scrollbar-none items-end min-h-[40px]">
+                        {/* Desktop-only switcher padding */}
+                    </div>
+                )}
 
-                <div className={`relative px-4 pb-12 mb-10 overflow-visible`}>
+                <div className={`relative px-4 mb-20 overflow-visible`}>
                     {/* Balanced Glassmorphic Header (v13.97) */}
                     <div className="relative">
                         {/* Glow with slower breathing animation */}
                         <div className="absolute -inset-2 bg-gradient-to-r from-white/10 to-transparent blur-3xl opacity-30 pointer-events-none" />
 
                         <div
-                            className={`relative px-7 pt-7 pb-10 rounded-3xl border border-white/15 shadow-lg overflow-hidden transition-colors duration-500`}
+                            className={`relative px-7 pt-8 pb-4 rounded-3xl border border-white/15 shadow-lg overflow-hidden transition-colors duration-500`}
                             style={{
                                 backdropFilter: 'blur(5.6px) saturate(1.5)',
                                 WebkitBackdropFilter: 'blur(5.6px) saturate(1.5)',
@@ -922,21 +948,20 @@ export default function Project({
 
 
 
-                            <div className="flex flex-col gap-2 relative z-10">
+                            <div className="flex flex-col gap-1.5 relative z-10">
                                 <div className="space-y-1">
-                                    <h2 className="font-normal uppercase tracking-[0.2em] leading-[1.1] pr-4 break-words" style={{ color: colorScheme.base, fontSize: '1.25rem' }}>
+                                    <h2 className={`font-normal uppercase tracking-[0.2em] leading-[1.1] pr-4 break-words ${theme.text}`} style={{ fontSize: '1.25rem' }}>
                                         <HackerText text={activeProject.title} />
                                     </h2>
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-[2px] w-6 opacity-30" style={{ backgroundColor: colorScheme.base }} />
-                                        <p className={`text-sm tracking-normal font-normal ${theme.text} leading-tight`}>
-                                            <span style={{ color: colorScheme.base }} className="font-semibold italic font-primary">"{activeProject.meta.find(m => m.label === "Project Result")?.value}"</span>
+                                    <div className="flex items-center gap-2 pt-2">
+                                        <p className={`text-xs tracking-normal font-normal ${theme.text} leading-tight opacity-70 italic`}>
+                                            <span style={{ color: colorScheme.base }} className="font-semibold font-primary">"{activeProject.meta.find(m => m.label === "Project Result")?.value}"</span>
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-white/5 pt-6">
+                            <div className="grid grid-cols-1 gap-y-5 border-t border-white/5 pt-6">
                                 {activeProject.meta.filter(m => m.label !== 'Project Result').map((m, i) => (
                                     <div key={i} className={`flex flex-col gap-1 ${m.label === 'Cooperated With' ? 'col-span-2' : ''}`}>
                                         <span className={`text-[8px] uppercase tracking-[0.2em] font-normal ${theme.subText} opacity-30`}>{m.label}</span>
@@ -945,20 +970,20 @@ export default function Project({
                                                 {m.value}
                                             </a>
                                         ) : (
-                                            <span className={`text-[10px] font-content uppercase tracking-[0.05em] opacity-80 font-medium truncate pr-2`}>
+                                            <span className={`text-[10px] font-content uppercase tracking-[0.05em] opacity-80 font-medium pr-2`}>
                                                 {m.value}
                                             </span>
                                         )}
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-6 pt-4 border-t border-white/5">
+                            <div className="mt-6  border-t border-white/5">
                                 <ProjectSwitcher projects={projects} activeId={activeProject.id} onSwitch={setSelectedProjectId} theme={theme} colorScheme={colorScheme} isLightMode={isLightMode} />
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-20">
+                    <div className="flex flex-col gap-20 mt-10">
                         {activeProject.images.map((img) => {
                             const pivotItem = activeProject.description[0].items.find(item =>
                                 item.targetId === img.id || (item.targetIds && item.targetIds.includes(img.id))
@@ -1024,8 +1049,8 @@ export default function Project({
         <div className="w-full h-full flex flex-col justify-center pointer-events-auto overflow-visible" onWheel={(e) => e.stopPropagation()}>
             <div className={`w-full h-full flex flex-col md:flex-row relative overflow-visible`}>
                 <div className="w-full h-1/2 md:h-full relative min-w-0 flex-shrink-0 overflow-visible">
-                    <div ref={imageContainerRef} className={`${disablePhysics ? 'w-full px-[5vw] snap-y snap-mandatory' : 'w-full'} h-full overflow-y-auto scrollbar-none cursor-grab select-none relative`} onScroll={handleScrollUpdate} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: disablePhysics ? 'pan-y' : 'none' }}>
-                        <div className={`flex flex-col w-full ${disablePhysics ? 'gap-24 py-[40vh]' : 'gap-12 py-[50vh]'} transition-transform duration-150 overflow-visible relative`}>
+                    <div ref={imageContainerRef} className={`${disablePhysics ? 'w-full px-[5vw] snap-y snap-mandatory' : 'w-[calc(100%+200px)] -ml-[100px] px-[100px]'} h-full overflow-y-auto scrollbar-none cursor-grab select-none relative`} onScroll={handleScrollUpdate} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: disablePhysics ? 'pan-y' : 'none' }}>
+                        <div className={`flex flex-col w-full ${disablePhysics ? 'gap-24 py-[40vh]' : 'gap-12 py-[50vh] transition-transform duration-150 relative'}`}>
                             {activeProject.images.map((img) => (
                                 <div key={img.id} id={`proj-img-${img.id}`} className={`project-image-wrapper relative group overflow-visible flex-shrink-0 w-full h-auto ${disablePhysics ? 'rounded-2xl shadow-2xl overflow-hidden snap-center' : 'rounded-[2px]'} will-change-transform cursor-inherit`}>
                                     <img src={img.src} alt={img.id} draggable="false" className={`w-full h-auto block pointer-events-none transition-all duration-700 ${disablePhysics ? 'group-hover:scale-105' : ''}`} loading="lazy" />
@@ -1062,7 +1087,7 @@ export default function Project({
 
             {portalTarget && createPortal(
                 <div
-                    className={`group h-full min-h-0 flex flex-col justify-between ${disablePhysics ? 'rounded-l-3xl border-l w-[30vw]' : 'rounded-xl border w-[20vw]'} ${theme.border} ${disablePhysics ? 'py-7 px-7' : 'py-5 px-6'} shadow-lg relative transition-all duration-500`}
+                    className={`group h-full min-h-0 flex flex-col justify-between ${disablePhysics ? 'rounded-l-3xl border-l w-full' : 'rounded-xl border w-[20vw]'} ${theme.border} ${disablePhysics ? 'py-7 px-7' : 'py-5 px-6'} shadow-lg relative transition-all duration-500`}
                     style={{
                         backdropFilter: disablePhysics ? 'blur(15px) saturate(1.8)' : 'blur(5.6px) saturate(1.5)',
                         WebkitBackdropFilter: disablePhysics ? 'blur(15px) saturate(1.8)' : 'blur(5.6px) saturate(1.5)',

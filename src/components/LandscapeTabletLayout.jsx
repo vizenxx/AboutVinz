@@ -234,25 +234,49 @@ export default function LandscapeTabletLayout({
                 <div className="hl-container pt-3 pb-[2vh] overflow-visible">
                     <nav className="flex flex-col items-start gap-4 nav-item">
                         <div className="flex flex-col items-start leading-none relative">
-                            <button onClick={() => scrollToSection('home')}
-                                className={`group relative tracking-[0.2em] uppercase font-primary transition-all duration-300 flex items-center gap-0 ${activePage === 'home' ? 'text-lg font-normal' : 'text-base opacity-40 font-medium'}`}
+                            <button onClick={(e) => {
+                                scrollToSection('about');
+                                const sweep = e.currentTarget.querySelector('.nav-sweep');
+                                if (sweep) {
+                                    gsap.timeline()
+                                        .set(sweep, { transformOrigin: "left center", scaleX: 0, opacity: 1 })
+                                        .to(sweep, { scaleX: 1, duration: 0.4, ease: "power2.inOut" })
+                                        .set(sweep, { transformOrigin: "right center" })
+                                        .to(sweep, { scaleX: 0, duration: 0.4, ease: "power2.inOut" });
+                                }
+                            }}
+                                className={`group relative tracking-[0.2em] uppercase font-primary transition-all duration-300 flex items-center gap-0 ${activePage === 'work' ? 'opacity-40 hover:opacity-100 text-base font-medium' : 'opacity-100 text-lg font-normal'}`}
                                 onMouseEnter={() => !isTouch && setHoveredNav('Vinz Tan')} onMouseLeave={() => !isTouch && setHoveredNav(null)}
                                 style={{ color: (activePage === 'about' || activePage === 'home') ? colorScheme.base : 'inherit' }}
                             >
                                 <span className="absolute inset-x-0 inset-y-[-2px] entry-highlight-mask" style={{ backgroundColor: colorScheme.compString, transformOrigin: 'left center', zIndex: 10, opacity: 1 }} />
-                                <span className="transition-all ease-out" style={{ width: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) && clickedItem !== 'Vinz Tan' ? '0.5cqw' : '0px', height: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) && clickedItem !== 'Vinz Tan' ? '1em' : '1px', backgroundColor: colorScheme.compString, marginRight: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) && clickedItem !== 'Vinz Tan' ? '8px' : '0px', opacity: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) && clickedItem !== 'Vinz Tan' ? 1 : 0, transitionProperty: 'width, height, margin-right, opacity', transitionDuration: '300ms, 200ms, 300ms, 300ms', transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)', zIndex: -1 }} />
+                                <span className="transition-all ease-out" style={{ width: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) ? '0.5cqw' : '0px', height: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) ? '1em' : '1px', backgroundColor: colorScheme.compString, marginRight: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) ? '8px' : '0px', opacity: (hoveredNav === 'Vinz Tan' || (activePage === 'about' && hoveredNav === null)) ? 1 : 0, transitionProperty: 'width, height, margin-right, opacity', transitionDuration: '300ms, 200ms, 300ms, 300ms', transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)', zIndex: -1 }} />
+                                {/* Click Sweep Layer */}
+                                <span className="nav-sweep absolute left-0 right-0 h-[1.1em] pointer-events-none opacity-0" style={{ backgroundColor: colorScheme.compString, zIndex: 5 }} />
                                 <span className="relative" style={{ zIndex: 1 }}>Vinz Tan</span>
                             </button>
                         </div>
                         <div className="flex flex-col items-start gap-4">
-                            <button onClick={() => scrollToSection('work')}
+                            <button onClick={(e) => {
+                                scrollToSection('work');
+                                const sweep = e.currentTarget.querySelector('.nav-sweep');
+                                if (sweep) {
+                                    gsap.timeline()
+                                        .set(sweep, { transformOrigin: "left center", scaleX: 0, opacity: 1 })
+                                        .to(sweep, { scaleX: 1, duration: 0.4, ease: "power2.inOut" })
+                                        .set(sweep, { transformOrigin: "right center" })
+                                        .to(sweep, { scaleX: 0, duration: 0.4, ease: "power2.inOut" });
+                                }
+                            }}
                                 className={`flex items-center gap-0 tracking-[0.2em] relative uppercase transition-all duration-300 font-primary text-left ${activePage === 'work' ? 'text-lg font-normal opacity-100' : 'text-base opacity-40 font-medium hover:opacity-100 cursor-pointer'}`}
                                 onMouseEnter={() => !isTouch && setHoveredNav('Projects')}
                                 onMouseLeave={() => !isTouch && setHoveredNav(null)}
                                 style={{ color: activePage === 'work' ? colorScheme.base : 'inherit' }}
                             >
                                 <span className="absolute inset-x-0 inset-y-[-2px] entry-highlight-mask" style={{ backgroundColor: colorScheme.compString, transformOrigin: 'left center', zIndex: 10, opacity: 1 }} />
-                                <span className="transition-all ease-out" style={{ width: (hoveredNav === 'Projects' || activePage === 'work') ? '4px' : '0px', height: (hoveredNav === 'Projects' || activePage === 'work') ? '1em' : '1px', backgroundColor: colorScheme.compString, marginRight: (hoveredNav === 'Projects' || activePage === 'work') ? '8px' : '0px', opacity: (hoveredNav === 'Projects' || activePage === 'work') ? 1 : 0, transitionProperty: 'width, height, margin-right, opacity', transitionDuration: '300ms, 200ms, 300ms, 300ms', transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)', zIndex: -1 }} />
+                                <span className="transition-all ease-out" style={{ width: (hoveredNav === 'Projects' || (activePage === 'work' && hoveredNav === null)) ? '0.5cqw' : '0px', height: (hoveredNav === 'Projects' || (activePage === 'work' && hoveredNav === null)) ? '1em' : '1px', backgroundColor: colorScheme.compString, marginRight: (hoveredNav === 'Projects' || (activePage === 'work' && hoveredNav === null)) ? '8px' : '0px', opacity: (hoveredNav === 'Projects' || (activePage === 'work' && hoveredNav === null)) ? 1 : 0, transitionProperty: 'width, height, margin-right, opacity', transitionDuration: '300ms, 200ms, 300ms, 300ms', transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)', zIndex: -1 }} />
+                                {/* Click Sweep Layer */}
+                                <span className="nav-sweep absolute left-0 right-0 h-[1.1em] pointer-events-none opacity-0" style={{ backgroundColor: colorScheme.compString, zIndex: 5 }} />
                                 <span className="relative" style={{ zIndex: 1 }}>Projects</span>
                             </button>
                         </div>
@@ -323,25 +347,32 @@ export default function LandscapeTabletLayout({
                 </section>
 
                 {/* SECTION: WORK */}
-                <section id="section-work" className="h-[100dvh] w-full flex flex-row py-[10vh] pl-[2vw]">
-                    {/* Left: Images */}
-                    <div className="flex-1 min-h-0 relative h-full overflow-visible" style={{ flex: 4 }}>
-                        <div className="w-full h-full relative" id="project-lpc-target">
-                            <Project
-                                theme={theme}
-                                colorScheme={colorScheme}
-                                isLightMode={isLightMode}
-                                disablePhysics={true}
-                                isMobile={false}
-                                onImageScroll={onImageScroll}
-                                selectedProjectId={activeProjectId}
-                            />
+                <section id="section-work" className="h-[100dvh] w-full flex flex-row py-[10vh] gap-[2vw]">
+                    {/* Main Stage: Images + Scrubber */}
+                    <div className="flex-1 h-full flex flex-row min-w-0">
+                        {/* Images */}
+                        <div className="flex-1 min-h-0 relative h-full overflow-visible">
+                            <div className="w-full h-full relative" id="project-lpc-target">
+                                <Project
+                                    theme={theme}
+                                    colorScheme={colorScheme}
+                                    isLightMode={isLightMode}
+                                    disablePhysics={true}
+                                    isMobile={false}
+                                    onImageScroll={onImageScroll}
+                                    selectedProjectId={activeProjectId}
+                                />
+                            </div>
+                        </div>
+                        {/* Scrubber (Now attached to Images, matching DV) */}
+                        <div className="w-[4vw] flex-none relative flex items-center justify-center h-full z-20">
+                            <div id="project-rpc-target" className="w-full flex justify-center items-center" />
                         </div>
                     </div>
-                    {/* Right: Narrative Portal */}
-                    <div className="w-[30vw] flex-shrink-0 h-full flex flex-row items-center">
-                        <div id="project-rpc-target" className="w-[2vw] h-full flex items-center justify-center translate-x-1" />
-                        <div id="right-panel-portal" className="flex-1 h-full flex flex-col items-end" />
+
+                    {/* Right: Narrative Portal (Dedicated Column) */}
+                    <div className="w-[25vw] flex-shrink-0 h-full flex flex-col justify-center relative z-20">
+                        <div id="right-panel-portal" className="w-full h-full" />
                     </div>
                 </section>
             </div>

@@ -393,15 +393,16 @@ export default function App() {
       // Animate out
       const targetsOut = [grcRef.current, gccRef.current, rippleCanvasRef.current].filter(Boolean);
       if (targetsOut.length > 0) {
-        tl.to(targetsOut, { x: destX, opacity: 0, scale: 1.2, filter: 'blur(40px)', duration: 0.3, ease: 'expo.in' });
-        tl.to(targetsOut, { y: destY, duration: 0.3, ease: 'linear' }, "<");
+        // Optimized: Reduced blur and scale for better performance
+        tl.to(targetsOut, { x: destX * 0.5, opacity: 0, scale: 1.05, filter: 'blur(15px)', duration: 0.3, ease: 'power2.in' });
+        tl.to(targetsOut, { y: destY * 0.5, duration: 0.3, ease: 'linear' }, "<");
       }
 
-      const bgTravelDist = destX * 0.5; const bgTravelDistY = destY * 0.5;
+      const bgTravelDist = destX * 0.3; const bgTravelDistY = destY * 0.3;
       if (spotlightRef.current) {
-        tl.to(spotlightRef.current, { x: bgTravelDist, opacity: 0, scale: 1.1, filter: 'blur(80px)', duration: 0.3, ease: 'expo.in' }, "<");
+        tl.to(spotlightRef.current, { x: bgTravelDist, opacity: 0, scale: 1.05, filter: 'blur(30px)', duration: 0.3, ease: 'power2.in' }, "<");
         tl.to(spotlightRef.current, { y: bgTravelDistY, duration: 0.3, ease: 'linear' }, "<");
-        tl.set(spotlightRef.current, { x: -bgTravelDist, y: -bgTravelDistY, opacity: 0, scale: 1.1, filter: 'blur(40px)' });
+        tl.set(spotlightRef.current, { x: -bgTravelDist, y: -bgTravelDistY, opacity: 0, scale: 1.05, filter: 'blur(20px)' });
       }
 
       clickShockwaveRef.current = 2000;

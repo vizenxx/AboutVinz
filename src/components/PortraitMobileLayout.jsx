@@ -7,6 +7,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ==========================================
+// SECTION 1: MARQUEE COMPONENT
+// ==========================================
 // Hybrid Marquee Component for Manual + Auto Scroll (v13.90)
 const MarqueeRow = ({ items, reverse = false, theme, isLightMode }) => {
     const containerRef = useRef(null);
@@ -150,6 +153,9 @@ const MarqueeRow = ({ items, reverse = false, theme, isLightMode }) => {
     );
 };
 
+// ==========================================
+// SECTION 2: PORTRAIT MOBILE LAYOUT (MAIN)
+// ==========================================
 export default function PortraitMobileLayout({
     activePage,
     handlePageChange,
@@ -501,7 +507,9 @@ export default function PortraitMobileLayout({
 
             {/* CONTENT WRAPPER */}
             <div className="w-full flex flex-col">
-                {/* HOME */}
+                {/* ==========================================
+                    SECTION 3: HOME SECTION (Hero/Role)
+                    ========================================== */}
                 <section ref={homeRef} id="home" className="w-full min-h-[100dvh] px-6 relative flex flex-col pt-24">
                     {/* ... content truncated ... */}
                     {/* Hero Text ... */}
@@ -570,8 +578,10 @@ export default function PortraitMobileLayout({
 
 
 
-                {/* ABOUT */}
-                <section ref={aboutRef} id="about" className="w-full flex flex-col pt-20 relative overflow-hidden">
+                {/* ==========================================
+                    SECTION 4: ABOUT SECTION (Portrait/Bio)
+                    ========================================== */}
+                <section ref={aboutRef} id="about" className="w-full flex flex-col pt-20 relative overflow-hidden scroll-mt-28">
                     <div className={`w-full h-[65vh] relative overflow-hidden`}>
                         <img
                             src="/portfolio-site/vinz-portrait.jpg"
@@ -625,8 +635,10 @@ export default function PortraitMobileLayout({
                     </div>
                 </section>
 
-                {/* WORK */}
-                <section ref={workRef} id="work" className="w-full flex flex-col pt-5 pb-20 gap-8 relative">
+                {/* ==========================================
+                    SECTION 5: WORK SECTION (Projects)
+                    ========================================== */}
+                <section ref={workRef} id="work" className="w-full flex flex-col pt-20 pb-20 gap-4 relative scroll-mt-28">
 
                     <div className="w-full h-auto relative">
                         <Project
@@ -684,14 +696,17 @@ export default function PortraitMobileLayout({
             />
 
 
+            {/* ==========================================
+                SECTION 6: FIXED UI ELEMENTS (Nav/Pill/Footer)
+                ========================================== */}
             {/* --- FIXED UI ELEMENTS (Above atmosphere) --- */}
 
             {/* Top UI: Desktop-style Nav - Moves ONLY on overlap */}
-            <div className={`fixed z-40 flex flex-col items-start gap-4 justify-start ${theme.text} transition-all duration-500 ${isMenuOpen ? 'opacity-0' : 'opacity-100'} 
+            <div className={`fixed z-40 flex flex-col items-start justify-start ${theme.text} transition-all duration-500 ${isMenuOpen ? 'opacity-0' : 'opacity-100'} 
                 ${overlap.topLeft ? 'top-[30px] right-[24px] items-end text-right' : 'top-[30px] left-[24px] items-start text-left'}`}
                 style={{ pointerEvents: isMenuOpen ? 'none' : 'auto' }}>
 
-                <button onClick={() => handleNavClick('about')} className={`flex items-center group py-3 transition-all relative ${overlap.topLeft ? 'flex-row-reverse' : ''}`}>
+                <button onClick={() => handleNavClick('about')} className={`flex items-center group transition-all relative ${overlap.topLeft ? 'flex-row-reverse' : ''}`}>
                     <span className="absolute inset-x-[-4px] inset-y-[-2px] entry-highlight-mask" style={{ backgroundColor: colorScheme.compString, transformOrigin: 'left center', zIndex: 10, opacity: 1 }} />
 
                     {/* Active Color Bar - Relative push logic like DV */}
@@ -879,21 +894,33 @@ export default function PortraitMobileLayout({
             {isMenuOpen && (
                 <div className={`fixed inset-0 z-[45] ${overlayBg} backdrop-blur-xl transition-all duration-500 flex flex-col items-center justify-center gap-8`}>
                     {[
-                        { name: 'Home', ref: homeRef },
-                        { name: 'Vinz Tan', ref: aboutRef },
-                        { name: 'Projects', ref: workRef }
-                    ].map((item) => {
-                        return (
-                            <button
-                                key={item.name}
-                                onClick={() => scrollTo(item.ref)}
-                                className={`text-4xl font-normal uppercase tracking-widest font-primary ${overlayText} hover:opacity-70`}
-                                style={item.name === 'Vinz Tan' ? { color: nameColor } : {}}
-                            >
-                                {item.name}
-                            </button>
-                        );
-                    })}
+                        { name: 'Home', ref: homeRef, id: 'home' },
+                        { name: 'Vinz Tan', ref: aboutRef, id: 'about' },
+                        { name: 'Projects', ref: workRef, id: 'work' },
+                    ].map((item) => (
+                        <button
+                            key={item.name}
+                            onClick={(e) => {
+                                handleNavClick(item.id);
+                                const sweep = e.currentTarget.querySelector('.nav-sweep');
+                                if (sweep) {
+                                    gsap.timeline()
+                                        .set(sweep, { transformOrigin: "left center", scaleX: 0, opacity: 1 })
+                                        .to(sweep, { scaleX: 1, duration: 0.4, ease: "power2.inOut" })
+                                        .set(sweep, { transformOrigin: "right center" })
+                                        .to(sweep, { scaleX: 0, duration: 0.4, ease: "power2.inOut" });
+                                }
+                            }}
+                            className={`flex items-center group transition-all relative px-8 py-2 overflow-hidden`}
+                        >
+                            {/* Click Sweep Layer */}
+                            <span className="nav-sweep absolute left-0 right-0 h-[1.2em] top-1/2 -translate-y-1/2 pointer-events-none opacity-0" style={{ backgroundColor: colorScheme.compString, zIndex: 0 }} />
+                            <div className="relative z-10">
+                                <HackerText text={item.name} />
+                            </div>
+                        </button>
+                    ))}
+
                     <div className={`mt-8 flex gap-8`}>
                         <a href="https://www.linkedin.com/in/vinz-tan/" target="_blank" rel="noopener noreferrer" className={`flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] font-primary ${isLightMode ? 'text-black/60' : 'text-white/60'} hover:opacity-100`}>
                             <Linkedin size={18} strokeWidth={1.5} />
