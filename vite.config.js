@@ -5,14 +5,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: '/',
   plugins: [react()],
-<<<<<<< HEAD
-});
-
-=======
-  base: '/',
   server: {
     host: true,
     port: 5173,
   }
 })
->>>>>>> 1d779f1 (Configure custom domain vinz.info)
